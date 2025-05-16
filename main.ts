@@ -83,6 +83,10 @@ interface CommandResult {
 	code: number;
 }
 
+interface CommanderError extends Error {
+	code?: string;
+}
+
 // --- helper functions ---
 
 /**
@@ -1309,7 +1313,7 @@ async function importProfile(filepath: string): Promise<void> {
 			);
 		}
 
-		let profiles = await readProfiles();
+		const profiles = await readProfiles();
 		const existingProfileIndex = profiles.findIndex(
 			(p) => p.name === profileName
 		);
@@ -1662,14 +1666,19 @@ async function main(): Promise<void> {
 	} catch (error) {
 		// commander typically handles its own errors and exits.
 		// this catch is for unexpected errors during parsing itself.
+
+		interface CommanderError extends Error {
+			code?: string;
+		}
+		
 		if (
 			error instanceof Error &&
-			(error as any).code === "commander.unknownCommand"
+			(error as CommanderError).code === "commander.unknownCommand"
 		) {
 			// already handled by Commander
 		} else if (
 			error instanceof Error &&
-			(error as any).code === "commander.missingArgument"
+			(error as CommanderError).code === "commander.missingArgument"
 		) {
 			// already handled by Commander
 		} else {
