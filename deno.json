@@ -3,7 +3,7 @@
 	"tasks": {
 		"dev": "deno run --watch --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf main.ts",
 		"start": "deno run --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf main.ts",
-		"compile:linux": "deno compile --target x86_64-unknown-linux-gnu --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output cinnamon-profile-manager-linux-x86_64 main.ts"
+		"compile": "deno compile --target x86_64-unknown-linux-gnu --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output cinnamon-profile-manager-linux-x86_64 main.ts"
 	},
 	"imports": {
 		"@dotrex/table": "jsr:@dotrex/table@^0.0.0-alpha.1",
