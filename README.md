@@ -15,7 +15,7 @@ A command-line tool for managing and switching between multiple Cinnamon desktop
 Each profile preserves your complete Cinnamon desktop configuration, including:
 
 - Panel layouts and settings
-- Applets and their configurations 
+- Applets and their configurations
 - Desktop themes and appearance settings
 - Window manager settings
 - Keyboard shortcuts and bindings
@@ -28,9 +28,10 @@ Each profile preserves your complete Cinnamon desktop configuration, including:
 ### Prerequisites
 
 The following tools are required:
-- [Deno](https://deno.land/) runtime
-- `zip` and `unzip` utilities 
+
+- `zip` and `unzip` utilities
 - `dconf` (usually installed with Cinnamon)
+- [Deno](https://deno.land/) runtime (if not using pre-compiled binaries)
 
 ```bash
 # Install prerequisites on Debian/Ubuntu-based systems
