@@ -48,7 +48,7 @@ curl -fsSL https://deno.land/install.sh | sh
 The easiest way to install Cinnamon Profile Manager is to download the pre-compiled binaries from the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) tab on GitHub.
 
 ```bash
-# Download the binary for your platform (example for Linux)
+# Download the binary
 wget https://github.com/claytontdm/cinnamon-profile-manager/releases/latest/download/cinnamon-profile-manager-linux-x86_64
 
 # Make it executable
