@@ -90,24 +90,15 @@ sudo chmod +x /usr/local/bin/cinnamon-profile-manager
 
 #### Method 4: Cross-platform binaries
 
-You can compile binaries for different platforms:
+You can compile the binary using this command:
 
 ```bash
-# Compile for your current platform
 deno task compile
-
-# Compile for specific platforms
-deno task compile:linux    # For Linux x86_64
-deno task compile:macos    # For macOS x86_64
-deno task compile:windows  # For Windows x86_64
-
-# Compile for all supported platforms
-deno task compile:all
 ```
 
 The compiled binaries will be created in the project directory.
 
-> **Note**: Pre-compiled binaries for all supported platforms (Linux, macOS, and Windows) are available in the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) section of the GitHub repository. This is the recommended installation method for most users.
+> **Note**: Pre-compiled binaries for Linux are available in the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) section of the GitHub repository. This is the recommended installation method for most users.
 
 ## Usage
 
