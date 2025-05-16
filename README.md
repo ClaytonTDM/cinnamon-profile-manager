@@ -172,9 +172,8 @@ deno task dev
 # Run normally
 deno task start
 
-# Compile binaries
-deno task compile        # for current platform
-deno task compile:all    # for all platforms
+# Compile binary
+deno task compile
 ```
 
 ### Automated Builds
