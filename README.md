@@ -43,9 +43,9 @@ curl -fsSL https://deno.land/install.sh | sh
 
 ### Install the Application
 
-#### Method 1: Download pre-compiled binaries
+#### Method 1: Download pre-compiled binary
 
-The easiest way to install Cinnamon Profile Manager is to download the pre-compiled binaries from the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) tab on GitHub.
+The easiest way to install Cinnamon Profile Manager is to download the pre-compiled binary from the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) tab on GitHub.
 
 ```bash
 # Download the binary
@@ -96,7 +96,7 @@ You can compile the binary using this command:
 deno task compile
 ```
 
-The compiled binaries will be created in the project directory.
+The compiled binary will be created in the project directory.
 
 > **Note**: Pre-compiled binaries for Linux are available in the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) section of the GitHub repository. This is the recommended installation method for most users.
 
@@ -183,8 +183,8 @@ This project uses GitHub Actions for automated builds and releases:
 - **CI Build**: Every push to the `main` branch triggers a build to ensure compilation works
 - **Linting & Formatting**: Automatically ensures code style consistency
 - **Releases**: When a new tag with format `v*` (e.g., `v0.1.0`) is pushed, GitHub Actions automatically:
-  1. Builds binaries for Linux, macOS, and Windows
-  2. Creates a new GitHub Release with these binaries
+  1. Builds binary for Linux
+  2. Creates a new GitHub Release with this binary
   3. Generates release notes automatically
 
 To create a new release:
