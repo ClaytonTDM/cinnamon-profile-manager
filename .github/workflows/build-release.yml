@@ -14,17 +14,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         include:
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            asset_name: cinnamon-profile-manager-linux-x86_64
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            asset_name: cinnamon-profile-manager-macos-x86_64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            asset_name: cinnamon-profile-manager-windows-x86_64.exe
+            asset_name: cinnamon-profile-manager-x86_64
 
     steps:
       - name: Checkout code
@@ -101,21 +95,17 @@ jobs:
           draft: false
           prerelease: ${{ steps.get_version.outputs.IS_PRERELEASE }}
           files: |
-            ./artifacts/cinnamon-profile-manager-linux-x86_64/cinnamon-profile-manager-linux-x86_64
-            ./artifacts/cinnamon-profile-manager-macos-x86_64/cinnamon-profile-manager-macos-x86_64
-            ./artifacts/cinnamon-profile-manager-windows-x86_64.exe/cinnamon-profile-manager-windows-x86_64.exe
+            ./artifacts/cinnamon-profile-manager-x86_64/cinnamon-profile-manager-x86_64
           body: |
             ${{ steps.get_version.outputs.IS_PRERELEASE == 'true' && '> ⚠️ **Pre-release version**: This is a development release and may contain bugs or incomplete features.' || '> ✅ **Stable release**: This version is considered stable for production use.' }}
             
             ## Installation
             
-            Download the appropriate binary for your platform:
+            Download the binary:
             
-            - **Linux**: `cinnamon-profile-manager-linux-x86_64`
-            - **macOS**: `cinnamon-profile-manager-macos-x86_64`
-            - **Windows**: `cinnamon-profile-manager-windows-x86_64.exe`
+            - `cinnamon-profile-manager-x86_64`
             
-            Make the file executable (Linux/macOS only):
+            Make the file executable:
             ```bash
             chmod +x cinnamon-profile-manager-*
             ```
