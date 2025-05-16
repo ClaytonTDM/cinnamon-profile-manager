@@ -2,8 +2,6 @@
 
 A command-line tool for managing and switching between multiple Cinnamon desktop environment profiles. Easily save, restore, and share your Cinnamon desktop configurations.
 
-![Cinnamon Profile Manager](https://github.com/user/cinnamon-profile-manager/raw/main/screenshots/header.png)
-
 ## Features
 
 - **Create profiles** from your current Cinnamon settings
