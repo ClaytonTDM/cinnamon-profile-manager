@@ -1,6 +1,11 @@
 name: Lint & Format
 
-on: [push]
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - 'v*'
 
 permissions:
    contents: write
