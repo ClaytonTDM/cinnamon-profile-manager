@@ -35,15 +35,14 @@ const ENV = {
 if (!ENV.HOME) {
 	console.error(
 		chalk.red(
-			"Error: HOME environment variable not set. This tool cannot operate."
-		)
+			"Error: HOME environment variable not set. This tool cannot operate.",
+		),
 	);
 	Deno.exit(1);
 }
 
 const APP_PATHS = {
-	CUSTOM_PROFILES_ROOT_DIR:
-		Deno.env.get("CINNAMON_PROFILES_DIR") ||
+	CUSTOM_PROFILES_ROOT_DIR: Deno.env.get("CINNAMON_PROFILES_DIR") ||
 		join(ENV.HOME, ".cinnamon-profiles"),
 	PROFILES_DB_FILE: "",
 	BACKUP_DIR: "",
@@ -51,12 +50,12 @@ const APP_PATHS = {
 };
 APP_PATHS.PROFILES_DB_FILE = join(
 	APP_PATHS.CUSTOM_PROFILES_ROOT_DIR,
-	"profiles.json"
+	"profiles.json",
 );
 APP_PATHS.BACKUP_DIR = join(APP_PATHS.CUSTOM_PROFILES_ROOT_DIR, "backup");
 APP_PATHS.AUTO_BACKUP_DIR = join(
 	APP_PATHS.CUSTOM_PROFILES_ROOT_DIR,
-	"auto-backup"
+	"auto-backup",
 );
 
 const CINNAMON_PATHS = {
@@ -96,10 +95,12 @@ interface CommanderError extends Error {
 async function executeCommand(
 	command: string,
 	args: string[],
-	options?: Omit<
-		Deno.CommandOptions,
-		"args" | "stdout" | "stderr" | "stdin"
-	> & { stdinContent?: string }
+	options?:
+		& Omit<
+			Deno.CommandOptions,
+			"args" | "stdout" | "stderr" | "stdin"
+		>
+		& { stdinContent?: string },
 ): Promise<CommandResult> {
 	try {
 		const { stdinContent, ...denoOptions } = options || {};
@@ -131,10 +132,9 @@ async function executeCommand(
 		return {
 			success: false,
 			stdout: "",
-			stderr:
-				error instanceof Error
-					? error.message
-					: "Failed to execute command (Deno.Command error).",
+			stderr: error instanceof Error
+				? error.message
+				: "Failed to execute command (Deno.Command error).",
 			code: -1,
 		};
 	}
@@ -158,8 +158,8 @@ async function ensureAppDirectories(): Promise<void> {
 	if (!(await exists(APP_PATHS.CUSTOM_PROFILES_ROOT_DIR))) {
 		console.log(
 			chalk.blue(
-				`Creating custom profiles directory: ${APP_PATHS.CUSTOM_PROFILES_ROOT_DIR}`
-			)
+				`Creating custom profiles directory: ${APP_PATHS.CUSTOM_PROFILES_ROOT_DIR}`,
+			),
 		);
 		await Deno.mkdir(APP_PATHS.CUSTOM_PROFILES_ROOT_DIR, {
 			recursive: true,
@@ -167,11 +167,11 @@ async function ensureAppDirectories(): Promise<void> {
 	}
 	if (!(await exists(APP_PATHS.PROFILES_DB_FILE))) {
 		console.log(
-			chalk.blue(`Creating profiles file: ${APP_PATHS.PROFILES_DB_FILE}`)
+			chalk.blue(`Creating profiles file: ${APP_PATHS.PROFILES_DB_FILE}`),
 		);
 		await Deno.writeTextFile(
 			APP_PATHS.PROFILES_DB_FILE,
-			JSON.stringify([], null, 2)
+			JSON.stringify([], null, 2),
 		);
 	}
 	for (const dir of [APP_PATHS.BACKUP_DIR, APP_PATHS.AUTO_BACKUP_DIR]) {
@@ -200,18 +200,18 @@ async function readProfiles(): Promise<Profile[]> {
 			chalk.red(
 				`Error parsing profiles.json: ${
 					e instanceof Error ? e.message : "Unknown error"
-				}.`
-			)
+				}.`,
+			),
 		);
 		console.warn(
 			chalk.yellow(
-				`Backing up corrupted profiles.json and creating a new empty one.`
-			)
+				`Backing up corrupted profiles.json and creating a new empty one.`,
+			),
 		);
 		try {
 			await Deno.copyFile(
 				APP_PATHS.PROFILES_DB_FILE,
-				`${APP_PATHS.PROFILES_DB_FILE}.corrupted-${Date.now()}`
+				`${APP_PATHS.PROFILES_DB_FILE}.corrupted-${Date.now()}`,
 			);
 		} catch (backupError) {
 			console.error(
@@ -220,13 +220,13 @@ async function readProfiles(): Promise<Profile[]> {
 						backupError instanceof Error
 							? backupError.message
 							: "Unknown error"
-					}`
-				)
+					}`,
+				),
 			);
 		}
 		await Deno.writeTextFile(
 			APP_PATHS.PROFILES_DB_FILE,
-			JSON.stringify([], null, 2)
+			JSON.stringify([], null, 2),
 		);
 		return [];
 	}
@@ -238,7 +238,7 @@ async function readProfiles(): Promise<Profile[]> {
 async function writeProfiles(profiles: Profile[]): Promise<void> {
 	await Deno.writeTextFile(
 		APP_PATHS.PROFILES_DB_FILE,
-		JSON.stringify(profiles, null, 2)
+		JSON.stringify(profiles, null, 2),
 	);
 }
 
@@ -247,7 +247,7 @@ async function writeProfiles(profiles: Profile[]): Promise<void> {
  */
 async function withTempDir<T>(
 	options: Deno.MakeTempOptions,
-	action: (tempDir: string) => Promise<T>
+	action: (tempDir: string) => Promise<T>,
 ): Promise<T> {
 	const tempDir = await Deno.makeTempDir(options);
 	try {
@@ -262,13 +262,13 @@ async function withTempDir<T>(
  */
 async function copyDirectoryContents(
 	sourceDir: string,
-	destinationDir: string
+	destinationDir: string,
 ): Promise<void> {
 	if (!(await exists(sourceDir))) {
 		console.warn(
 			chalk.yellow(
-				`Warning: Source directory ${sourceDir} does not exist. Skipping copy of its contents.`
-			)
+				`Warning: Source directory ${sourceDir} does not exist. Skipping copy of its contents.`,
+			),
 		);
 		return;
 	}
@@ -288,7 +288,7 @@ async function copyDirectoryContents(
  */
 async function zipDirectoryContents(
 	sourceDir: string,
-	zipFilePath: string
+	zipFilePath: string,
 ): Promise<boolean> {
 	// arguments for zip: -r (recursive), -q (quiet), zipFilePath (target archive), "." (current dir contents)
 	const args = ["-rq", zipFilePath, "."];
@@ -305,8 +305,8 @@ async function zipDirectoryContents(
 			chalk.red(
 				`Error reading source directory ${sourceDir} for zipping: ${
 					e instanceof Error ? e.message : String(e)
-				}`
-			)
+				}`,
+			),
 		);
 		return false;
 	}
@@ -314,8 +314,8 @@ async function zipDirectoryContents(
 	if (isEmpty) {
 		console.warn(
 			chalk.yellow(
-				`Warning: Source directory ${sourceDir} for zipping is empty. Archive will be empty.`
-			)
+				`Warning: Source directory ${sourceDir} for zipping is empty. Archive will be empty.`,
+			),
 		);
 		// allow creating an empty zip, but it might indicate an upstream issue.
 	}
@@ -324,7 +324,7 @@ async function zipDirectoryContents(
 
 	if (!zipResult.success) {
 		console.error(
-			chalk.red(`Error: Failed to create archive at ${zipFilePath}.`)
+			chalk.red(`Error: Failed to create archive at ${zipFilePath}.`),
 		);
 		console.error(chalk.gray(`zip stderr: ${zipResult.stderr}`));
 		return false;
@@ -337,7 +337,7 @@ async function zipDirectoryContents(
  */
 async function unzipArchive(
 	zipFilePath: string,
-	destinationDir: string
+	destinationDir: string,
 ): Promise<boolean> {
 	const unzipResult = await executeCommand("unzip", [
 		"-oq",
@@ -347,7 +347,7 @@ async function unzipArchive(
 	]);
 	if (!unzipResult.success) {
 		console.error(
-			chalk.red(`Error: Failed to extract archive ${zipFilePath}.`)
+			chalk.red(`Error: Failed to extract archive ${zipFilePath}.`),
 		);
 		console.error(chalk.gray(`unzip stderr: ${unzipResult.stderr}`));
 		return false;
@@ -361,7 +361,7 @@ async function unzipArchive(
 function printHeader(): void {
 	console.log(chalk.cyan("Cinnamon Profile Manager") + " v" + VERSION);
 	console.log(
-		chalk.gray("Manage and switch between Cinnamon desktop profiles")
+		chalk.gray("Manage and switch between Cinnamon desktop profiles"),
 	);
 	console.log("");
 }
@@ -376,8 +376,8 @@ async function listProfiles(): Promise<void> {
 	if (profiles.length === 0) {
 		console.log(
 			chalk.gray(
-				"No profiles created yet. Use 'create <name>' to make one."
-			)
+				"No profiles created yet. Use 'create <name>' to make one.",
+			),
 		);
 		return;
 	}
@@ -395,7 +395,7 @@ async function listProfiles(): Promise<void> {
 	}
 	console.log(table.toString());
 	console.log(
-		chalk.gray(`Use ${PROGRAM_NAME} switch <name> to switch profiles`)
+		chalk.gray(`Use ${PROGRAM_NAME} switch <name> to switch profiles`),
 	);
 }
 
@@ -407,7 +407,7 @@ async function createProfile(name: string): Promise<void> {
 	let profiles = await readProfiles();
 	if (profiles.some((p) => p.name === name)) {
 		console.error(
-			chalk.red(`Error: Profile with name "${name}" already exists.`)
+			chalk.red(`Error: Profile with name "${name}" already exists.`),
 		);
 		Deno.exit(1);
 	}
@@ -419,25 +419,27 @@ async function createProfile(name: string): Promise<void> {
 			const tempConfigDir = join(tempDir, "config");
 
 			console.log(
-				chalk.gray("Copying current Cinnamon file-based settings...")
+				chalk.gray("Copying current Cinnamon file-based settings..."),
 			);
 			await copyDirectoryContents(
 				CINNAMON_PATHS.SHARE_DIR_ABSOLUTE,
-				tempShareDir
+				tempShareDir,
 			);
 			await copyDirectoryContents(
 				CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE,
-				tempConfigDir
+				tempConfigDir,
 			);
 
 			// dump dconf settings
 			const dconfDumpPath = join(tempDir, DCONF_SETTINGS_FILE);
 			console.log(
 				chalk.gray(
-					`Dumping dconf settings for /org/cinnamon/ to ${basename(
-						dconfDumpPath
-					)}...`
-				)
+					`Dumping dconf settings for /org/cinnamon/ to ${
+						basename(
+							dconfDumpPath,
+						)
+					}...`,
+				),
 			);
 			const dconfDumpResult = await executeCommand("dconf", [
 				"dump",
@@ -449,17 +451,17 @@ async function createProfile(name: string): Promise<void> {
 			} else {
 				console.warn(
 					chalk.yellow(
-						`Warning: Failed to dump dconf settings for /org/cinnamon/. Profile will be created without them.`
-					)
+						`Warning: Failed to dump dconf settings for /org/cinnamon/. Profile will be created without them.`,
+					),
 				);
 				console.warn(
-					chalk.gray(`dconf stderr: ${dconfDumpResult.stderr}`)
+					chalk.gray(`dconf stderr: ${dconfDumpResult.stderr}`),
 				);
 			}
 
 			const zipFile = join(
 				APP_PATHS.CUSTOM_PROFILES_ROOT_DIR,
-				`${name}-${crypto.randomUUID()}.zip`
+				`${name}-${crypto.randomUUID()}.zip`,
 			);
 			console.log(chalk.gray(`Zipping profile to ${zipFile}...`));
 			if (!(await zipDirectoryContents(tempDir, zipFile))) {
@@ -476,7 +478,7 @@ async function createProfile(name: string): Promise<void> {
 			});
 			await writeProfiles(profiles);
 			return true;
-		}
+		},
 	);
 
 	if (success) {
@@ -495,7 +497,7 @@ async function createProfile(name: string): Promise<void> {
  */
 async function createTimestampedBackup(
 	targetDir: string,
-	prefix: string = "backup"
+	prefix: string = "backup",
 ): Promise<string | null> {
 	if (!(await exists(targetDir))) {
 		await Deno.mkdir(targetDir, { recursive: true });
@@ -511,26 +513,28 @@ async function createTimestampedBackup(
 
 			console.log(
 				chalk.gray(
-					"Copying current Cinnamon file-based settings for backup..."
-				)
+					"Copying current Cinnamon file-based settings for backup...",
+				),
 			);
 			await copyDirectoryContents(
 				CINNAMON_PATHS.SHARE_DIR_ABSOLUTE,
-				tempShareDir
+				tempShareDir,
 			);
 			await copyDirectoryContents(
 				CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE,
-				tempConfigDir
+				tempConfigDir,
 			);
 
 			// dump dconf settings for backup
 			const dconfDumpPath = join(tempDir, DCONF_SETTINGS_FILE);
 			console.log(
 				chalk.gray(
-					`Dumping dconf settings for /org/cinnamon/ to ${basename(
-						dconfDumpPath
-					)} for backup...`
-				)
+					`Dumping dconf settings for /org/cinnamon/ to ${
+						basename(
+							dconfDumpPath,
+						)
+					} for backup...`,
+				),
 			);
 			const dconfDumpResult = await executeCommand("dconf", [
 				"dump",
@@ -539,22 +543,24 @@ async function createTimestampedBackup(
 			if (dconfDumpResult.success && dconfDumpResult.stdout) {
 				await Deno.writeTextFile(dconfDumpPath, dconfDumpResult.stdout);
 				console.log(
-					chalk.gray("dconf settings dumped successfully for backup.")
+					chalk.gray(
+						"dconf settings dumped successfully for backup.",
+					),
 				);
 			} else {
 				console.warn(
 					chalk.yellow(
-						`Warning: Failed to dump dconf settings for /org/cinnamon/ during backup. Backup will not include them.`
-					)
+						`Warning: Failed to dump dconf settings for /org/cinnamon/ during backup. Backup will not include them.`,
+					),
 				);
 				console.warn(
-					chalk.gray(`dconf stderr: ${dconfDumpResult.stderr}`)
+					chalk.gray(`dconf stderr: ${dconfDumpResult.stderr}`),
 				);
 			}
 
 			console.log(chalk.gray(`Zipping backup to ${backupFile}...`));
 			return await zipDirectoryContents(tempDir, backupFile);
-		}
+		},
 	);
 
 	return success ? backupFile : null;
@@ -567,7 +573,7 @@ async function backupCurrentSettingsCmd(): Promise<void> {
 	console.log(chalk.yellow("Backing up current settings..."));
 	const backupFile = await createTimestampedBackup(
 		APP_PATHS.BACKUP_DIR,
-		"manual-backup"
+		"manual-backup",
 	);
 	if (backupFile) {
 		console.log(chalk.green(`Backup created successfully @ ${backupFile}`));
@@ -582,11 +588,11 @@ async function backupCurrentSettingsCmd(): Promise<void> {
  */
 async function restoreSettingsFromZip(
 	zipFilePath: string,
-	isProfileSwitch: boolean = false
+	isProfileSwitch: boolean = false,
 ): Promise<boolean> {
 	if (!(await exists(zipFilePath))) {
 		console.error(
-			chalk.red(`Error: Archive file not found: ${zipFilePath}`)
+			chalk.red(`Error: Archive file not found: ${zipFilePath}`),
 		);
 		return false;
 	}
@@ -596,10 +602,12 @@ async function restoreSettingsFromZip(
 		async (tempDir) => {
 			console.log(
 				chalk.gray(
-					`Extracting archive ${basename(
-						zipFilePath
-					)} to temporary directory...`
-				)
+					`Extracting archive ${
+						basename(
+							zipFilePath,
+						)
+					} to temporary directory...`,
+				),
 			);
 			if (!(await unzipArchive(zipFilePath, tempDir))) {
 				return false;
@@ -608,35 +616,37 @@ async function restoreSettingsFromZip(
 			if (!isProfileSwitch) {
 				console.log(
 					chalk.gray(
-						`Creating automatic pre-restore backup of current settings...`
-					)
+						`Creating automatic pre-restore backup of current settings...`,
+					),
 				);
 				const autoBackupFile = await createTimestampedBackup(
 					APP_PATHS.AUTO_BACKUP_DIR,
-					"pre-restore"
+					"pre-restore",
 				);
 				if (autoBackupFile) {
 					console.log(
 						chalk.gray(
-							`Automatic backup created at ${autoBackupFile}`
-						)
+							`Automatic backup created at ${autoBackupFile}`,
+						),
 					);
 				} else {
 					console.warn(
 						chalk.yellow(
-							"Warning: Automatic pre-restore backup creation may have failed. Continuing with restore..."
-						)
+							"Warning: Automatic pre-restore backup creation may have failed. Continuing with restore...",
+						),
 					);
 				}
 			}
 
 			console.log(
-				chalk.gray(`Removing existing Cinnamon file-based settings...`)
+				chalk.gray(`Removing existing Cinnamon file-based settings...`),
 			);
-			if (await exists(CINNAMON_PATHS.SHARE_DIR_ABSOLUTE))
+			if (await exists(CINNAMON_PATHS.SHARE_DIR_ABSOLUTE)) {
 				await emptyDir(CINNAMON_PATHS.SHARE_DIR_ABSOLUTE);
-			if (await exists(CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE))
+			}
+			if (await exists(CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE)) {
 				await emptyDir(CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE);
+			}
 			// ensure dirs exist after emptying, as emptyDir might remove them if they were empty before.
 			await Deno.mkdir(CINNAMON_PATHS.SHARE_DIR_ABSOLUTE, {
 				recursive: true,
@@ -652,25 +662,25 @@ async function restoreSettingsFromZip(
 			if (await exists(tempShareDir)) {
 				await copyDirectoryContents(
 					tempShareDir,
-					CINNAMON_PATHS.SHARE_DIR_ABSOLUTE
+					CINNAMON_PATHS.SHARE_DIR_ABSOLUTE,
 				);
 			} else {
 				console.warn(
 					chalk.yellow(
-						"Warning: No 'share' directory found in the archive."
-					)
+						"Warning: No 'share' directory found in the archive.",
+					),
 				);
 			}
 			if (await exists(tempConfigDir)) {
 				await copyDirectoryContents(
 					tempConfigDir,
-					CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE
+					CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE,
 				);
 			} else {
 				console.warn(
 					chalk.yellow(
-						"Warning: No 'config' directory found in the archive."
-					)
+						"Warning: No 'config' directory found in the archive.",
+					),
 				);
 			}
 
@@ -679,22 +689,26 @@ async function restoreSettingsFromZip(
 			if (await exists(dconfSettingsPath)) {
 				console.log(
 					chalk.gray(
-						`Restoring dconf settings for /org/cinnamon/ from ${basename(
-							dconfSettingsPath
-						)}...`
-					)
+						`Restoring dconf settings for /org/cinnamon/ from ${
+							basename(
+								dconfSettingsPath,
+							)
+						}...`,
+					),
 				);
 				try {
 					const dconfSettingsContent = await Deno.readTextFile(
-						dconfSettingsPath
+						dconfSettingsPath,
 					);
 					if (dconfSettingsContent.trim() === "") {
 						console.log(
 							chalk.gray(
-								`dconf settings file ${basename(
-									dconfSettingsPath
-								)} is empty. Skipping dconf load.`
-							)
+								`dconf settings file ${
+									basename(
+										dconfSettingsPath,
+									)
+								} is empty. Skipping dconf load.`,
+							),
 						);
 					} else {
 						const dconfLoadResult = await executeCommand(
@@ -702,48 +716,50 @@ async function restoreSettingsFromZip(
 							["load", "/org/cinnamon/"],
 							{
 								stdinContent: dconfSettingsContent,
-							}
+							},
 						);
 
 						if (dconfLoadResult.success) {
 							console.log(
 								chalk.green(
-									"dconf settings for /org/cinnamon/ restored successfully."
-								)
+									"dconf settings for /org/cinnamon/ restored successfully.",
+								),
 							);
 						} else {
 							console.warn(
 								chalk.yellow(
-									`Warning: Failed to restore dconf settings for /org/cinnamon/.`
-								)
+									`Warning: Failed to restore dconf settings for /org/cinnamon/.`,
+								),
 							);
 							console.warn(
 								chalk.gray(
-									`dconf stderr: ${dconfLoadResult.stderr}`
-								)
+									`dconf stderr: ${dconfLoadResult.stderr}`,
+								),
 							);
 						}
 					}
 				} catch (e) {
 					console.warn(
 						chalk.yellow(
-							`Warning: Error reading dconf settings file ${basename(
-								dconfSettingsPath
-							)}: ${
+							`Warning: Error reading dconf settings file ${
+								basename(
+									dconfSettingsPath,
+								)
+							}: ${
 								e instanceof Error ? e.message : String(e)
-							}. Skipping dconf restore.`
-						)
+							}. Skipping dconf restore.`,
+						),
 					);
 				}
 			} else {
 				console.log(
 					chalk.gray(
-						`No dconf settings file (${DCONF_SETTINGS_FILE}) found in archive. Skipping dconf restore.`
-					)
+						`No dconf settings file (${DCONF_SETTINGS_FILE}) found in archive. Skipping dconf restore.`,
+					),
 				);
 			}
 			return true;
-		}
+		},
 	);
 }
 
@@ -757,8 +773,8 @@ async function restoreBackupCmd(): Promise<void> {
 	}
 	console.log(
 		chalk.yellow(
-			`Restoring settings from backup: ${basename(backupFilePath)}`
-		)
+			`Restoring settings from backup: ${basename(backupFilePath)}`,
+		),
 	);
 
 	const success = await restoreSettingsFromZip(backupFilePath);
@@ -767,8 +783,8 @@ async function restoreBackupCmd(): Promise<void> {
 		console.log(chalk.green("Settings restored successfully from backup."));
 		console.log(
 			chalk.gray(
-				"You may need to restart Cinnamon or log out/in for all changes to take effect."
-			)
+				"You may need to restart Cinnamon or log out/in for all changes to take effect.",
+			),
 		);
 	} else {
 		console.error(chalk.red("Failed to restore settings from backup."));
@@ -785,7 +801,7 @@ async function selectBackupFile(): Promise<string | null> {
 		!(await exists(APP_PATHS.AUTO_BACKUP_DIR))
 	) {
 		console.log(
-			chalk.yellow("No backup directories found. Nothing to restore.")
+			chalk.yellow("No backup directories found. Nothing to restore."),
 		);
 		return null;
 	}
@@ -803,12 +819,11 @@ async function selectBackupFile(): Promise<string | null> {
 			if (dirEntry.isFile && dirEntry.name.endsWith(".zip")) {
 				let date: Date | null = null;
 				const dateMatch = dirEntry.name.match(
-					/(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z)\.zip$/
+					/(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z)\.zip$/,
 				);
 				if (dateMatch) {
 					const datePart = dateMatch[1];
-					const isoStr =
-						datePart.substring(0, 13) +
+					const isoStr = datePart.substring(0, 13) +
 						":" +
 						datePart.substring(14, 16) +
 						":" +
@@ -821,8 +836,8 @@ async function selectBackupFile(): Promise<string | null> {
 						if (isNaN(date.getTime())) {
 							console.log(
 								chalk.gray(
-									`Could not parse date from: ${dirEntry.name}, produced: ${isoStr}`
-								)
+									`Could not parse date from: ${dirEntry.name}, produced: ${isoStr}`,
+								),
 							);
 							date = null;
 						}
@@ -831,8 +846,8 @@ async function selectBackupFile(): Promise<string | null> {
 							chalk.gray(
 								`Error parsing date: ${
 									e instanceof Error ? e.message : "Unknown"
-								}`
-							)
+								}`,
+							),
 						);
 					}
 				}
@@ -852,12 +867,11 @@ async function selectBackupFile(): Promise<string | null> {
 			if (dirEntry.isFile && dirEntry.name.endsWith(".zip")) {
 				let date: Date | null = null;
 				const dateMatch = dirEntry.name.match(
-					/(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z)\.zip$/
+					/(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z)\.zip$/,
 				);
 				if (dateMatch) {
 					const datePart = dateMatch[1];
-					const isoStr =
-						datePart.substring(0, 13) +
+					const isoStr = datePart.substring(0, 13) +
 						":" +
 						datePart.substring(14, 16) +
 						":" +
@@ -870,8 +884,8 @@ async function selectBackupFile(): Promise<string | null> {
 						if (isNaN(date.getTime())) {
 							console.log(
 								chalk.gray(
-									`Could not parse date from: ${dirEntry.name}, produced: ${isoStr}`
-								)
+									`Could not parse date from: ${dirEntry.name}, produced: ${isoStr}`,
+								),
 							);
 							date = null;
 						}
@@ -880,8 +894,8 @@ async function selectBackupFile(): Promise<string | null> {
 							chalk.gray(
 								`Error parsing date: ${
 									e instanceof Error ? e.message : "Unknown"
-								}`
-							)
+								}`,
+							),
 						);
 					}
 				}
@@ -897,7 +911,7 @@ async function selectBackupFile(): Promise<string | null> {
 
 	if (filesWithDates.length === 0) {
 		console.log(
-			chalk.yellow("No backup files found in the backup directories.")
+			chalk.yellow("No backup files found in the backup directories."),
 		);
 		return null;
 	}
@@ -910,7 +924,7 @@ async function selectBackupFile(): Promise<string | null> {
 	});
 
 	console.log(
-		chalk.yellow("Available backup files (both manual and automatic):")
+		chalk.yellow("Available backup files (both manual and automatic):"),
 	);
 	const table = new Table()
 		.header(["#", "Backup File", "Date", "Type"])
@@ -928,8 +942,8 @@ async function selectBackupFile(): Promise<string | null> {
 
 	const input = prompt(
 		chalk.yellow(
-			"Enter the number of the backup to restore (or 0 to cancel):"
-		)
+			"Enter the number of the backup to restore (or 0 to cancel):",
+		),
 	);
 	if (input === null) {
 		console.log(chalk.gray("Restore cancelled by user."));
@@ -944,8 +958,8 @@ async function selectBackupFile(): Promise<string | null> {
 	) {
 		console.error(
 			chalk.red(
-				`Error: Invalid selection. Please enter a number between 0 and ${filesWithDates.length}.`
-			)
+				`Error: Invalid selection. Please enter a number between 0 and ${filesWithDates.length}.`,
+			),
 		);
 		return null;
 	}
@@ -971,49 +985,49 @@ async function switchProfile(name: string): Promise<void> {
 	// ask for confirmation before switching, as it will override current settings
 	const confirmMessage = profileToActivate.active
 		? chalk.yellow(
-				`Profile "${name}" is already active. Re-applying it will reset any unsaved changes. Continue?`
-		  )
+			`Profile "${name}" is already active. Re-applying it will reset any unsaved changes. Continue?`,
+		)
 		: chalk.yellow(
-				`Switching to profile "${name}" will override your current settings. Continue?`
-		  );
-    
+			`Switching to profile "${name}" will override your current settings. Continue?`,
+		);
+
 	const proceed = confirm(confirmMessage);
 	if (!proceed) {
 		console.log(chalk.gray("Profile switch cancelled by user."));
 		Deno.exit(0);
 	}
-    console.log(chalk.yellow(`Switching to profile: ${name}`));
+	console.log(chalk.yellow(`Switching to profile: ${name}`));
 	console.log(
-		chalk.gray(`Creating backup of current settings before switching...`)
+		chalk.gray(`Creating backup of current settings before switching...`),
 	);
 	const autoBackupFile = await createTimestampedBackup(
 		APP_PATHS.AUTO_BACKUP_DIR,
-		`pre-switch-to-${name.replace(/[^a-zA-Z0-9-_]/g, "_")}`
+		`pre-switch-to-${name.replace(/[^a-zA-Z0-9-_]/g, "_")}`,
 	);
 	if (autoBackupFile) {
 		console.log(
 			chalk.gray(
-				`Automatic backup created at ${basename(autoBackupFile)}`
-			)
+				`Automatic backup created at ${basename(autoBackupFile)}`,
+			),
 		);
 	} else {
 		const proceed = confirm(
 			chalk.redBright(
-				"Automatic backup failed. Continue switching profile anyway? (Not Recommended)"
-			)
+				"Automatic backup failed. Continue switching profile anyway? (Not Recommended)",
+			),
 		);
 		if (!proceed) {
 			console.log(chalk.red("Profile switch aborted by user."));
 			Deno.exit(0);
 		}
 		console.warn(
-			chalk.yellow("Proceeding with switch despite backup failure...")
+			chalk.yellow("Proceeding with switch despite backup failure..."),
 		);
 	}
 
 	const success = await restoreSettingsFromZip(
 		profileToActivate.zipFile,
-		true
+		true,
 	);
 
 	if (success) {
@@ -1023,14 +1037,14 @@ async function switchProfile(name: string): Promise<void> {
 		console.log(chalk.green(`Profile "${name}" switched successfully.`));
 		console.log(
 			chalk.gray(
-				"You may need to restart Cinnamon or log out/in for all changes to take effect."
-			)
+				"You may need to restart Cinnamon or log out/in for all changes to take effect.",
+			),
 		);
 	} else {
 		console.error(
 			chalk.red(
-				`Failed to switch to profile "${name}". Current settings might be in an inconsistent state.`
-			)
+				`Failed to switch to profile "${name}". Current settings might be in an inconsistent state.`,
+			),
 		);
 		console.error(
 			chalk.yellow(
@@ -1038,8 +1052,8 @@ async function switchProfile(name: string): Promise<void> {
 					autoBackupFile
 						? basename(autoBackupFile)
 						: "Not created or failed"
-				}. You might need to restore it manually.`
-			)
+				}. You might need to restore it manually.`,
+			),
 		);
 		Deno.exit(1);
 	}
@@ -1065,34 +1079,40 @@ async function deleteProfile(name: string): Promise<void> {
 			await Deno.remove(profileToDelete.zipFile);
 			console.log(
 				chalk.gray(
-					`Deleted profile archive: ${basename(
-						profileToDelete.zipFile
-					)}`
-				)
+					`Deleted profile archive: ${
+						basename(
+							profileToDelete.zipFile,
+						)
+					}`,
+				),
 			);
 		} else {
 			console.warn(
 				chalk.yellow(
-					`Warning: Profile archive not found: ${basename(
-						profileToDelete.zipFile
-					)}`
-				)
+					`Warning: Profile archive not found: ${
+						basename(
+							profileToDelete.zipFile,
+						)
+					}`,
+				),
 			);
 		}
 	} catch (error) {
 		console.error(
 			chalk.red(
-				`Error deleting profile archive ${basename(
-					profileToDelete.zipFile
-				)}: ${error instanceof Error ? error.message : "Unknown error"}`
-			)
+				`Error deleting profile archive ${
+					basename(
+						profileToDelete.zipFile,
+					)
+				}: ${error instanceof Error ? error.message : "Unknown error"}`,
+			),
 		);
 	}
 
 	profiles.splice(profileIndex, 1);
 	await writeProfiles(profiles);
 	console.log(
-		chalk.green(`Profile "${name}" deleted successfully from records.`)
+		chalk.green(`Profile "${name}" deleted successfully from records.`),
 	);
 }
 
@@ -1102,11 +1122,11 @@ async function deleteProfile(name: string): Promise<void> {
 async function resetApplication(): Promise<void> {
 	console.log(
 		chalk.redBright.bold(
-			"WARNING: This will delete ALL profiles, backups, and manager settings!"
-		)
+			"WARNING: This will delete ALL profiles, backups, and manager settings!",
+		),
 	);
 	const confirm1 = confirm(
-		chalk.yellow("Are you absolutely sure you want to continue?")
+		chalk.yellow("Are you absolutely sure you want to continue?"),
 	);
 	if (!confirm1) {
 		console.log(chalk.gray("Reset aborted."));
@@ -1115,10 +1135,10 @@ async function resetApplication(): Promise<void> {
 	console.log(
 		chalk.redBright("This action CANNOT be undone. All data in ") +
 			chalk.cyan(APP_PATHS.CUSTOM_PROFILES_ROOT_DIR) +
-			chalk.redBright(" will be lost.")
+			chalk.redBright(" will be lost."),
 	);
 	const confirm2 = confirm(
-		chalk.yellow("Final confirmation: Delete everything?")
+		chalk.yellow("Final confirmation: Delete everything?"),
 	);
 	if (!confirm2) {
 		console.log(chalk.gray("Reset aborted."));
@@ -1128,8 +1148,8 @@ async function resetApplication(): Promise<void> {
 	try {
 		console.log(
 			chalk.gray(
-				`Deleting directory: ${APP_PATHS.CUSTOM_PROFILES_ROOT_DIR}`
-			)
+				`Deleting directory: ${APP_PATHS.CUSTOM_PROFILES_ROOT_DIR}`,
+			),
 		);
 		await Deno.remove(APP_PATHS.CUSTOM_PROFILES_ROOT_DIR, {
 			recursive: true,
@@ -1137,21 +1157,21 @@ async function resetApplication(): Promise<void> {
 		console.log(chalk.green("Application reset successfully."));
 		console.log(
 			chalk.gray(
-				"All profiles, backups, and settings have been deleted. The profiles directory will be recreated on next run."
-			)
+				"All profiles, backups, and settings have been deleted. The profiles directory will be recreated on next run.",
+			),
 		);
 	} catch (error) {
 		console.error(
 			chalk.red(
 				`Error during reset: ${
 					error instanceof Error ? error.message : "Unknown error"
-				}`
-			)
+				}`,
+			),
 		);
 		console.error(
 			chalk.yellow(
-				"The application data directory might be in an inconsistent state."
-			)
+				"The application data directory might be in an inconsistent state.",
+			),
 		);
 		Deno.exit(1);
 	}
@@ -1174,10 +1194,12 @@ async function exportProfile(name: string): Promise<void> {
 		async (tempDir) => {
 			console.log(
 				chalk.gray(
-					`Extracting profile data from ${basename(
-						profile.zipFile
-					)}...`
-				)
+					`Extracting profile data from ${
+						basename(
+							profile.zipFile,
+						)
+					}...`,
+				),
 			);
 			if (!(await unzipArchive(profile.zipFile, tempDir))) {
 				return false;
@@ -1189,11 +1211,12 @@ async function exportProfile(name: string): Promise<void> {
 				profileName: profile.name,
 				exportedAt: new Date().toISOString(),
 				originalCreatedAt: profile.lastModified, // this is actually last activated/created
-				description: `Exported Cinnamon desktop profile: ${profile.name}`,
+				description:
+					`Exported Cinnamon desktop profile: ${profile.name}`,
 			};
 			await Deno.writeTextFile(
 				join(tempDir, "cinnamon-profile-manager-metadata.json"),
-				JSON.stringify(profileMeta, null, 2)
+				JSON.stringify(profileMeta, null, 2),
 			);
 
 			const downloadsDir = ENV.HOME ? join(ENV.HOME, "Downloads") : null;
@@ -1213,11 +1236,12 @@ async function exportProfile(name: string): Promise<void> {
 
 			const safeName = name.replace(/[^a-zA-Z0-9-_]/g, "_");
 			const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-			const exportFileName = `cinnamon-profile-${safeName}-export-${timestamp}.zip`;
+			const exportFileName =
+				`cinnamon-profile-${safeName}-export-${timestamp}.zip`;
 			const exportPath = join(targetDir, exportFileName);
 
 			console.log(
-				chalk.gray(`Creating export archive at ${exportPath}...`)
+				chalk.gray(`Creating export archive at ${exportPath}...`),
 			);
 			if (!(await zipDirectoryContents(tempDir, exportPath))) {
 				// zipDirectoryContents now zips "."
@@ -1225,10 +1249,10 @@ async function exportProfile(name: string): Promise<void> {
 				return false;
 			}
 			console.log(
-				chalk.green(`Profile exported successfully to ${exportPath}`)
+				chalk.green(`Profile exported successfully to ${exportPath}`),
 			);
 			return true;
-		}
+		},
 	);
 	if (!success) {
 		Deno.exit(1);
@@ -1251,23 +1275,22 @@ async function importProfile(filepath: string): Promise<void> {
 			Deno.exit(1);
 		}
 
-		let profileName =
-			basename(filepath, ".zip")
-				.replace(/^cinnamon-profile-/i, "")
-				.replace(
-					/-export-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/i,
-					""
-				)
-				.replace(/[^a-zA-Z0-9-_]/g, "_") || `imported-${Date.now()}`;
+		let profileName = basename(filepath, ".zip")
+			.replace(/^cinnamon-profile-/i, "")
+			.replace(
+				/-export-\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z$/i,
+				"",
+			)
+			.replace(/[^a-zA-Z0-9-_]/g, "_") || `imported-${Date.now()}`;
 
 		const metadataPath = join(
 			tempDir,
-			"cinnamon-profile-manager-metadata.json"
+			"cinnamon-profile-manager-metadata.json",
 		);
 		if (await exists(metadataPath)) {
 			try {
 				const metadata = JSON.parse(
-					await Deno.readTextFile(metadataPath)
+					await Deno.readTextFile(metadataPath),
 				);
 				if (
 					metadata.profileName &&
@@ -1275,12 +1298,12 @@ async function importProfile(filepath: string): Promise<void> {
 				) {
 					profileName = metadata.profileName.replace(
 						/[^a-zA-Z0-9-_]/g,
-						"_"
+						"_",
 					);
 					console.log(
 						chalk.gray(
-							`Found metadata. Original profile name (sanitized): "${profileName}"`
-						)
+							`Found metadata. Original profile name (sanitized): "${profileName}"`,
+						),
 					);
 				}
 			} catch (e) {
@@ -1288,17 +1311,17 @@ async function importProfile(filepath: string): Promise<void> {
 					chalk.yellow(
 						`Warning: Could not parse metadata file: ${
 							e instanceof Error ? e.message : "Unknown error"
-						}`
-					)
+						}`,
+					),
 				);
 			}
 		}
 
 		const newNameInput = prompt(
 			chalk.yellow(
-				`Enter name for this imported profile (default: "${profileName}"):`
+				`Enter name for this imported profile (default: "${profileName}"):`,
 			),
-			profileName
+			profileName,
 		);
 		if (newNameInput !== null && newNameInput.trim() !== "") {
 			profileName = newNameInput.trim().replace(/[^a-zA-Z0-9-_]/g, "_");
@@ -1308,21 +1331,21 @@ async function importProfile(filepath: string): Promise<void> {
 			profileName = `imported-profile-${Date.now()}`;
 			console.log(
 				chalk.yellow(
-					`Profile name was empty, using generated name: "${profileName}"`
-				)
+					`Profile name was empty, using generated name: "${profileName}"`,
+				),
 			);
 		}
 
 		const profiles = await readProfiles();
 		const existingProfileIndex = profiles.findIndex(
-			(p) => p.name === profileName
+			(p) => p.name === profileName,
 		);
 
 		if (existingProfileIndex !== -1) {
 			const overwrite = confirm(
 				chalk.yellow(
-					`A profile named "${profileName}" already exists. Overwrite?`
-				)
+					`A profile named "${profileName}" already exists. Overwrite?`,
+				),
 			);
 			if (!overwrite) {
 				console.log(chalk.red("Import cancelled."));
@@ -1330,15 +1353,18 @@ async function importProfile(filepath: string): Promise<void> {
 			}
 			const oldProfile = profiles[existingProfileIndex];
 			try {
-				if (await exists(oldProfile.zipFile))
+				if (await exists(oldProfile.zipFile)) {
 					await Deno.remove(oldProfile.zipFile);
+				}
 			} catch (e) {
 				console.warn(
 					chalk.yellow(
-						`Could not delete old zip ${basename(
-							oldProfile.zipFile
-						)}: ${e instanceof Error ? e.message : "Unknown error"}`
-					)
+						`Could not delete old zip ${
+							basename(
+								oldProfile.zipFile,
+							)
+						}: ${e instanceof Error ? e.message : "Unknown error"}`,
+					),
 				);
 			}
 			profiles.splice(existingProfileIndex, 1);
@@ -1348,18 +1374,18 @@ async function importProfile(filepath: string): Promise<void> {
 		// we need to re-zip these into our internal profile format.
 		const newZipFile = join(
 			APP_PATHS.CUSTOM_PROFILES_ROOT_DIR,
-			`${profileName}-${crypto.randomUUID()}.zip`
+			`${profileName}-${crypto.randomUUID()}.zip`,
 		);
 		console.log(
 			chalk.gray(
-				`Creating internal profile archive ${basename(newZipFile)}...`
-			)
+				`Creating internal profile archive ${basename(newZipFile)}...`,
+			),
 		);
 		if (!(await zipDirectoryContents(tempDir, newZipFile))) {
 			console.error(
 				chalk.red(
-					"Failed to create internal profile archive from imported data."
-				)
+					"Failed to create internal profile archive from imported data.",
+				),
 			);
 			Deno.exit(1);
 		}
@@ -1373,12 +1399,12 @@ async function importProfile(filepath: string): Promise<void> {
 		await writeProfiles(profiles);
 
 		console.log(
-			chalk.green(`Profile "${profileName}" imported successfully.`)
+			chalk.green(`Profile "${profileName}" imported successfully.`),
 		);
 		console.log(
 			chalk.gray(
-				`Use '${PROGRAM_NAME} switch "${profileName}"' to activate this profile.`
-			)
+				`Use '${PROGRAM_NAME} switch "${profileName}"' to activate this profile.`,
+			),
 		);
 	});
 }
@@ -1388,7 +1414,7 @@ async function importProfile(filepath: string): Promise<void> {
  */
 async function updateActiveProfile(): Promise<void> {
 	console.log(
-		chalk.yellow("Updating active profile with current settings...")
+		chalk.yellow("Updating active profile with current settings..."),
 	);
 	const profiles = await readProfiles();
 
@@ -1396,8 +1422,8 @@ async function updateActiveProfile(): Promise<void> {
 	if (!activeProfile) {
 		console.error(
 			chalk.red(
-				"Error: No active profile found. Create or switch to a profile first."
-			)
+				"Error: No active profile found. Create or switch to a profile first.",
+			),
 		);
 		Deno.exit(1);
 	}
@@ -1406,8 +1432,8 @@ async function updateActiveProfile(): Promise<void> {
 
 	const confirmed = confirm(
 		chalk.yellow(
-			`This will update "${activeProfile.name}" with your current settings. Continue?`
-		)
+			`This will update "${activeProfile.name}" with your current settings. Continue?`,
+		),
 	);
 	if (!confirmed) {
 		console.log(chalk.gray("Update cancelled."));
@@ -1418,7 +1444,7 @@ async function updateActiveProfile(): Promise<void> {
 	console.log(chalk.gray("Creating backup before updating profile..."));
 	const backupFile = await createTimestampedBackup(
 		APP_PATHS.AUTO_BACKUP_DIR,
-		`pre-update-${activeProfile.name.replace(/[^a-zA-Z0-9-_]/g, "_")}`
+		`pre-update-${activeProfile.name.replace(/[^a-zA-Z0-9-_]/g, "_")}`,
 	);
 
 	if (backupFile) {
@@ -1426,15 +1452,15 @@ async function updateActiveProfile(): Promise<void> {
 	} else {
 		const proceed = confirm(
 			chalk.redBright(
-				"Failed to create pre-update backup. Continue anyway? (Not Recommended)"
-			)
+				"Failed to create pre-update backup. Continue anyway? (Not Recommended)",
+			),
 		);
 		if (!proceed) {
 			console.log(chalk.red("Update cancelled."));
 			Deno.exit(0);
 		}
 		console.warn(
-			chalk.yellow("Proceeding with update despite backup failure...")
+			chalk.yellow("Proceeding with update despite backup failure..."),
 		);
 	}
 
@@ -1445,25 +1471,27 @@ async function updateActiveProfile(): Promise<void> {
 			const tempConfigDir = join(tempDir, "config");
 
 			console.log(
-				chalk.gray("Copying current Cinnamon file-based settings...")
+				chalk.gray("Copying current Cinnamon file-based settings..."),
 			);
 			await copyDirectoryContents(
 				CINNAMON_PATHS.SHARE_DIR_ABSOLUTE,
-				tempShareDir
+				tempShareDir,
 			);
 			await copyDirectoryContents(
 				CINNAMON_PATHS.CONFIG_DIR_ABSOLUTE,
-				tempConfigDir
+				tempConfigDir,
 			);
 
 			// dump dconf settings
 			const dconfDumpPath = join(tempDir, DCONF_SETTINGS_FILE);
 			console.log(
 				chalk.gray(
-					`Dumping dconf settings for /org/cinnamon/ to ${basename(
-						dconfDumpPath
-					)}...`
-				)
+					`Dumping dconf settings for /org/cinnamon/ to ${
+						basename(
+							dconfDumpPath,
+						)
+					}...`,
+				),
 			);
 			const dconfDumpResult = await executeCommand("dconf", [
 				"dump",
@@ -1475,11 +1503,11 @@ async function updateActiveProfile(): Promise<void> {
 			} else {
 				console.warn(
 					chalk.yellow(
-						`Warning: Failed to dump dconf settings for /org/cinnamon/. Profile will be updated without them.`
-					)
+						`Warning: Failed to dump dconf settings for /org/cinnamon/. Profile will be updated without them.`,
+					),
 				);
 				console.warn(
-					chalk.gray(`dconf stderr: ${dconfDumpResult.stderr}`)
+					chalk.gray(`dconf stderr: ${dconfDumpResult.stderr}`),
 				);
 			}
 
@@ -1489,17 +1517,19 @@ async function updateActiveProfile(): Promise<void> {
 					await Deno.remove(activeProfile.zipFile);
 					console.log(
 						chalk.gray(
-							`Deleted old profile archive: ${basename(
-								activeProfile.zipFile
-							)}`
-						)
+							`Deleted old profile archive: ${
+								basename(
+									activeProfile.zipFile,
+								)
+							}`,
+						),
 					);
 				}
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
-						`Warning: Failed to delete old profile archive. Creating new file anyway.`
-					)
+						`Warning: Failed to delete old profile archive. Creating new file anyway.`,
+					),
 				);
 				console.warn(
 					chalk.gray(
@@ -1507,8 +1537,8 @@ async function updateActiveProfile(): Promise<void> {
 							error instanceof Error
 								? error.message
 								: "Unknown error"
-						}`
-					)
+						}`,
+					),
 				);
 			}
 
@@ -1523,25 +1553,25 @@ async function updateActiveProfile(): Promise<void> {
 			await writeProfiles(profiles);
 
 			return true;
-		}
+		},
 	);
 
 	if (success) {
 		console.log(
 			chalk.green(
-				`Profile "${activeProfile.name}" updated successfully with current settings.`
-			)
+				`Profile "${activeProfile.name}" updated successfully with current settings.`,
+			),
 		);
 	} else {
 		console.error(
-			chalk.red(`Failed to update profile "${activeProfile.name}".`)
+			chalk.red(`Failed to update profile "${activeProfile.name}".`),
 		);
 		console.error(
 			chalk.yellow(
 				`A backup was attempted before the update: ${
 					backupFile ? basename(backupFile) : "Failed"
-				}`
-			)
+				}`,
+			),
 		);
 		Deno.exit(1);
 	}
@@ -1561,10 +1591,12 @@ async function main(): Promise<void> {
 	if (missingDeps.length > 0) {
 		console.error(
 			chalk.red(
-				`Error: Required command(s) not found in PATH: ${missingDeps.join(
-					", "
-				)}. Please install them and try again.`
-			)
+				`Error: Required command(s) not found in PATH: ${
+					missingDeps.join(
+						", ",
+					)
+				}. Please install them and try again.`,
+			),
 		);
 		Deno.exit(1);
 	}
@@ -1575,7 +1607,7 @@ async function main(): Promise<void> {
 	const program = new Command()
 		.name(PROGRAM_NAME)
 		.description(
-			"A tool for managing Cinnamon desktop environment profiles. Includes settings, spices, panels, etc."
+			"A tool for managing Cinnamon desktop environment profiles. Includes settings, spices, panels, etc.",
 		)
 		.version(VERSION);
 
@@ -1589,7 +1621,7 @@ async function main(): Promise<void> {
 		.command("create")
 		.argument("<name>", "Name for the new profile.")
 		.description(
-			"Create a new profile from current Cinnamon settings (files and dconf)."
+			"Create a new profile from current Cinnamon settings (files and dconf).",
 		)
 		.action(createProfile);
 
@@ -1597,7 +1629,7 @@ async function main(): Promise<void> {
 		.command("switch")
 		.argument("<name>", "Name of the profile to switch to.")
 		.description(
-			"Switch to a different profile (restores files and dconf)."
+			"Switch to a different profile (restores files and dconf).",
 		)
 		.action(switchProfile);
 
@@ -1611,14 +1643,14 @@ async function main(): Promise<void> {
 	program
 		.command("backup")
 		.description(
-			"Create a manual backup of current Cinnamon settings (files and dconf)."
+			"Create a manual backup of current Cinnamon settings (files and dconf).",
 		)
 		.action(backupCurrentSettingsCmd);
 
 	program
 		.command("restore")
 		.description(
-			"Restore Cinnamon settings from a manual backup (files and dconf)."
+			"Restore Cinnamon settings from a manual backup (files and dconf).",
 		)
 		.action(restoreBackupCmd);
 
@@ -1626,7 +1658,7 @@ async function main(): Promise<void> {
 		.command("export")
 		.argument("<name>", "Name of the profile to export.")
 		.description(
-			"Export a profile to an external zip file (includes dconf settings if present)."
+			"Export a profile to an external zip file (includes dconf settings if present).",
 		)
 		.action(exportProfile);
 
@@ -1634,7 +1666,7 @@ async function main(): Promise<void> {
 		.command("import")
 		.argument("<filepath>", "Path to the profile zip file to import.")
 		.description(
-			"Import a profile from an external zip file (applies dconf if present)."
+			"Import a profile from an external zip file (applies dconf if present).",
 		)
 		.action(importProfile);
 
@@ -1642,14 +1674,14 @@ async function main(): Promise<void> {
 		.command("update")
 		.alias("up")
 		.description(
-			"Update the currently active profile with current settings."
+			"Update the currently active profile with current settings.",
 		)
 		.action(updateActiveProfile);
 
 	program
 		.command("reset")
 		.description(
-			"DANGER: Delete all profiles, backups, and manager settings."
+			"DANGER: Delete all profiles, backups, and manager settings.",
 		)
 		.action(resetApplication);
 
@@ -1670,7 +1702,7 @@ async function main(): Promise<void> {
 		interface CommanderError extends Error {
 			code?: string;
 		}
-		
+
 		if (
 			error instanceof Error &&
 			(error as CommanderError).code === "commander.unknownCommand"
@@ -1686,8 +1718,8 @@ async function main(): Promise<void> {
 				chalk.red(
 					`Unhandled error during command parsing: ${
 						error instanceof Error ? error.message : String(error)
-					}`
-				)
+					}`,
+				),
 			);
 		}
 		Deno.exit(1);
@@ -1698,8 +1730,8 @@ if (import.meta.main) {
 	main().catch((err) => {
 		console.error(
 			chalk.redBright(
-				`\nCritical error in main execution: ${err.message}`
-			)
+				`\nCritical error in main execution: ${err.message}`,
+			),
 		);
 		if (err.stack) {
 			console.error(chalk.gray(err.stack));
