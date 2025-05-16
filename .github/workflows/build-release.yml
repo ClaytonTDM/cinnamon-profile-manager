@@ -1,0 +1,113 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*' # Tag pattern for releases: v1.0.0, v0.2.1, etc.
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            asset_name: cinnamon-profile-manager-linux-x86_64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            asset_name: cinnamon-profile-manager-macos-x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            asset_name: cinnamon-profile-manager-windows-x86_64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x.x
+
+      - name: Get version from tag
+        id: get_version
+        shell: bash
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "Version: ${GITHUB_REF#refs/tags/v}"
+
+      - name: Compile binary
+        run: |
+          deno compile --target ${{ matrix.target }} --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output ${{ matrix.asset_name }} main.ts
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "Version: ${GITHUB_REF#refs/tags/v}"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: List artifacts
+        run: find ./artifacts -type f | sort
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Cinnamon Profile Manager v${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          files: |
+            ./artifacts/cinnamon-profile-manager-linux-x86_64/cinnamon-profile-manager-linux-x86_64
+            ./artifacts/cinnamon-profile-manager-macos-x86_64/cinnamon-profile-manager-macos-x86_64
+            ./artifacts/cinnamon-profile-manager-windows-x86_64.exe/cinnamon-profile-manager-windows-x86_64.exe
+          body: |
+            # Cinnamon Profile Manager v${{ steps.get_version.outputs.VERSION }}
+            
+            ## Installation
+            
+            Download the appropriate binary for your platform:
+            
+            - **Linux**: `cinnamon-profile-manager-linux-x86_64`
+            - **macOS**: `cinnamon-profile-manager-macos-x86_64`
+            - **Windows**: `cinnamon-profile-manager-windows-x86_64.exe`
+            
+            Make the file executable (Linux/macOS only):
+            ```bash
+            chmod +x cinnamon-profile-manager-*
+            ```
+            
+            For more details, see the [README](https://github.com/${{ github.repository }}/blob/main/README.md).
+            
+            ## Prerequisites
+            
+            These binaries require the following to be installed on your system:
+            - `zip` and `unzip` utilities
+            - `dconf` (usually installed with Cinnamon)
+            
+            See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for full details.

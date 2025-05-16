@@ -1,0 +1,20 @@
+{
+  "version": "0.1.0",
+  "tasks": {
+    "dev": "deno run --watch --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf main.ts",
+    "start": "deno run --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf main.ts",
+    "compile": "deno compile --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output cinnamon-profile-manager main.ts",
+    "compile:all": "deno task compile:linux && deno task compile:macos && deno task compile:windows",
+    "compile:linux": "deno compile --target x86_64-unknown-linux-gnu --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output cinnamon-profile-manager-linux-x86_64 main.ts",
+    "compile:macos": "deno compile --target x86_64-apple-darwin --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output cinnamon-profile-manager-macos-x86_64 main.ts",
+    "compile:windows": "deno compile --target x86_64-pc-windows-msvc --allow-env=TF_BUILD,TERM,CI,TEAMCITY_VERSION,COLORTERM,COLOR,ANSI_COLORS,BEARZ_ANSI_COLOR,CLICOLOR_FORCE,CINNAMON_PROFILES_DIR,DCONF_SETTINGS_FILE,HOME --allow-sys=osRelease --allow-read --allow-write --allow-run=cp,rm,which,zip,unzip,dconf --output cinnamon-profile-manager-windows-x86_64.exe main.ts"
+  },
+  "imports": {
+    "@dotrex/table": "jsr:@dotrex/table@^0.0.0-alpha.1",
+    "@std/assert": "jsr:@std/assert@^1.0.13",
+    "@std/fs": "jsr:@std/fs@^1.0.17",
+    "@std/path": "jsr:@std/path@^1.0.9",
+    "chalk": "npm:chalk@^5.4.1",
+    "commander": "npm:commander@^13.1.0"
+  }
+}
