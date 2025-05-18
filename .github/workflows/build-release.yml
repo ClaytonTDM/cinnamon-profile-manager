@@ -78,6 +78,24 @@ jobs:
             echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
             echo "This is a stable release version"
           fi
+      
+      - name: Extract changelog for version
+        id: changelog
+        run: |
+          CURRENT_VERSION="v${{ steps.get_version.outputs.VERSION }}"
+          echo "Extracting changelog for ${CURRENT_VERSION}"
+          CHANGELOG_SECTION=$(awk -v version="${CURRENT_VERSION}" '
+            BEGIN { found=0; }
+            /^## '"${CURRENT_VERSION}"'/ { found=1; next; }
+            /^## v[0-9]+\.[0-9]+\.[0-9]+/ { if (found) exit; }
+            { if (found) print; }
+          ' CHANGELOG.md)
+          CHANGELOG_SECTION="${CHANGELOG_SECTION//'%'/'%25'}"
+          CHANGELOG_SECTION="${CHANGELOG_SECTION//$'\n'/'%0A'}"
+          CHANGELOG_SECTION="${CHANGELOG_SECTION//$'\r'/'%0D'}"
+          echo "CHANGELOG_SECTION<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -99,6 +117,10 @@ jobs:
           body: |
             ${{ steps.get_version.outputs.IS_PRERELEASE == 'true' && '> ⚠️ **Pre-release version**: This is a development release and may contain bugs or incomplete features.' || '> ✅ **Stable release**: This version is considered stable for production use.' }}
             
+            ## What's New
+
+            ${{ steps.changelog.outputs.CHANGELOG_SECTION }}
+
             ## Installation
             
             Download the binary:
