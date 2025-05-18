@@ -52,10 +52,10 @@ The easiest way to install Cinnamon Profile Manager is to download the pre-compi
 wget https://github.com/ClaytonTDM/cinnamon-profile-manager/releases/download/v0.1.0/cinnamon-profile-manager-x86_64
 
 # Mark it as executable
-chmod +x cinnamon-profile-manager-linux-x86_64
+chmod +x cinnamon-profile-manager-x86_64
 
 # Move it into a directory in your PATH (optional)
-sudo mv cinnamon-profile-manager-linux-x86_64 /usr/local/bin/cinnamon-profile-manager
+sudo mv cinnamon-profile-manager-x86_64 /usr/local/bin/cinnamon-profile-manager
 ```
 
 #### Method 2: Run directly with Deno
