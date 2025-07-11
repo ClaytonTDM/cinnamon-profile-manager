@@ -455,7 +455,7 @@ async function listProfiles(): Promise<void> {
  */
 async function listBackups(): Promise<void> {
 	console.log(chalk.yellow("Available Backup Files:"));
-	
+
 	if (
 		!(await exists(APP_PATHS.BACKUP_DIR)) &&
 		!(await exists(APP_PATHS.AUTO_BACKUP_DIR))
@@ -565,7 +565,7 @@ async function listBackups(): Promise<void> {
 		.header(["Backup File", "Date", "Type", "Path"])
 		.padding(2)
 		.border(true);
-	
+
 	for (const { filename, date, type, fullPath } of filesWithDates) {
 		table.push([
 			filename,
@@ -574,7 +574,7 @@ async function listBackups(): Promise<void> {
 			fullPath,
 		]);
 	}
-	
+
 	console.log(table.toString());
 	console.log(
 		chalk.gray(`Use ${PROGRAM_NAME} restore to restore from a backup`),
@@ -584,7 +584,10 @@ async function listBackups(): Promise<void> {
 /**
  * Create a new profile based on the current settings
  */
-async function createProfile(name: string, options: CommandOptions): Promise<void> {
+async function createProfile(
+	name: string,
+	options: CommandOptions,
+): Promise<void> {
 	console.log(chalk.yellow(`Creating new profile: ${name}`));
 	let profiles = await readProfiles();
 	if (profiles.some((p) => p.name === name)) {
@@ -644,8 +647,13 @@ async function createProfile(name: string, options: CommandOptions): Promise<voi
 					"/org/cinnamon/",
 				]);
 				if (dconfDumpResult.success && dconfDumpResult.stdout) {
-					await Deno.writeTextFile(dconfDumpPath, dconfDumpResult.stdout);
-					console.log(chalk.gray("dconf settings dumped successfully."));
+					await Deno.writeTextFile(
+						dconfDumpPath,
+						dconfDumpResult.stdout,
+					);
+					console.log(
+						chalk.gray("dconf settings dumped successfully."),
+					);
 				} else {
 					console.warn(
 						chalk.yellow(
@@ -657,7 +665,9 @@ async function createProfile(name: string, options: CommandOptions): Promise<voi
 					);
 				}
 			} else {
-				console.log(chalk.gray("Skipping dconf settings (disabled by option)."));
+				console.log(
+					chalk.gray("Skipping dconf settings (disabled by option)."),
+				);
 			}
 
 			const zipFile = join(
@@ -759,7 +769,10 @@ async function createTimestampedBackup(
 					"/org/cinnamon/",
 				]);
 				if (dconfDumpResult.success && dconfDumpResult.stdout) {
-					await Deno.writeTextFile(dconfDumpPath, dconfDumpResult.stdout);
+					await Deno.writeTextFile(
+						dconfDumpPath,
+						dconfDumpResult.stdout,
+					);
 					console.log(
 						chalk.gray(
 							"dconf settings dumped successfully for backup.",
@@ -776,7 +789,11 @@ async function createTimestampedBackup(
 					);
 				}
 			} else {
-				console.log(chalk.gray("Skipping dconf settings backup (disabled by option)."));
+				console.log(
+					chalk.gray(
+						"Skipping dconf settings backup (disabled by option).",
+					),
+				);
 			}
 
 			console.log(chalk.gray(`Zipping backup to ${backupFile}...`));
@@ -790,14 +807,22 @@ async function createTimestampedBackup(
 /**
  * Copies theme directories from both user and system locations
  */
-async function copyThemeDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function copyThemeDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	if (options.userThemes) {
 		const tempUserThemesDir = join(tempDir, "user-themes");
 		console.log(chalk.gray("Copying user themes from ~/.themes..."));
 		if (await exists(THEME_PATHS.USER_THEMES_DIR)) {
-			await copyDirectoryContents(THEME_PATHS.USER_THEMES_DIR, tempUserThemesDir);
+			await copyDirectoryContents(
+				THEME_PATHS.USER_THEMES_DIR,
+				tempUserThemesDir,
+			);
 		} else {
-			console.log(chalk.gray("No user themes directory found, skipping."));
+			console.log(
+				chalk.gray("No user themes directory found, skipping."),
+			);
 		}
 	} else {
 		console.log(chalk.gray("Skipping user themes (disabled by option)."));
@@ -805,21 +830,30 @@ async function copyThemeDirectories(tempDir: string, options: ComponentOptions):
 
 	if (options.systemThemes) {
 		const tempSystemThemesDir = join(tempDir, "system-themes");
-		console.log(chalk.gray("Copying system themes from /usr/share/themes..."));
+		console.log(
+			chalk.gray("Copying system themes from /usr/share/themes..."),
+		);
 		if (await exists(THEME_PATHS.SYSTEM_THEMES_DIR)) {
 			try {
-				await copyDirectoryContents(THEME_PATHS.SYSTEM_THEMES_DIR, tempSystemThemesDir);
+				await copyDirectoryContents(
+					THEME_PATHS.SYSTEM_THEMES_DIR,
+					tempSystemThemesDir,
+				);
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
 						`Warning: Could not copy system themes (permission issue?): ${
-							error instanceof Error ? error.message : "Unknown error"
-						}`
-					)
+							error instanceof Error
+								? error.message
+								: "Unknown error"
+						}`,
+					),
 				);
 			}
 		} else {
-			console.log(chalk.gray("No system themes directory found, skipping."));
+			console.log(
+				chalk.gray("No system themes directory found, skipping."),
+			);
 		}
 	} else {
 		console.log(chalk.gray("Skipping system themes (not enabled)."));
@@ -829,48 +863,76 @@ async function copyThemeDirectories(tempDir: string, options: ComponentOptions):
 /**
  * Copies icon directories from user and system locations
  */
-async function copyIconDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function copyIconDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	if (options.userIcons) {
 		const tempUserIconsDir = join(tempDir, "user-icons");
-		console.log(chalk.gray("Copying user icons from ~/.local/share/icons..."));
+		console.log(
+			chalk.gray("Copying user icons from ~/.local/share/icons..."),
+		);
 		if (await exists(ICON_PATHS.USER_ICONS_DIR)) {
-			await copyDirectoryContents(ICON_PATHS.USER_ICONS_DIR, tempUserIconsDir);
+			await copyDirectoryContents(
+				ICON_PATHS.USER_ICONS_DIR,
+				tempUserIconsDir,
+			);
 		} else {
 			console.log(chalk.gray("No user icons directory found, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user icons from ~/.local/share/icons (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user icons from ~/.local/share/icons (disabled by option).",
+			),
+		);
 	}
 
 	if (options.userIconsAlt) {
 		const tempUserIconsAltDir = join(tempDir, "user-icons-alt");
 		console.log(chalk.gray("Copying user icons from ~/.icons..."));
 		if (await exists(ICON_PATHS.USER_ICONS_ALT_DIR)) {
-			await copyDirectoryContents(ICON_PATHS.USER_ICONS_ALT_DIR, tempUserIconsAltDir);
+			await copyDirectoryContents(
+				ICON_PATHS.USER_ICONS_ALT_DIR,
+				tempUserIconsAltDir,
+			);
 		} else {
 			console.log(chalk.gray("No ~/.icons directory found, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user icons from ~/.icons (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user icons from ~/.icons (disabled by option).",
+			),
+		);
 	}
 
 	if (options.systemIcons) {
 		const tempSystemIconsDir = join(tempDir, "system-icons");
-		console.log(chalk.gray("Copying system icons from /usr/share/icons..."));
+		console.log(
+			chalk.gray("Copying system icons from /usr/share/icons..."),
+		);
 		if (await exists(ICON_PATHS.SYSTEM_ICONS_DIR)) {
 			try {
-				await copyDirectoryContents(ICON_PATHS.SYSTEM_ICONS_DIR, tempSystemIconsDir);
+				await copyDirectoryContents(
+					ICON_PATHS.SYSTEM_ICONS_DIR,
+					tempSystemIconsDir,
+				);
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
 						`Warning: Could not copy system icons (permission issue?): ${
-							error instanceof Error ? error.message : "Unknown error"
-						}`
-					)
+							error instanceof Error
+								? error.message
+								: "Unknown error"
+						}`,
+					),
 				);
 			}
 		} else {
-			console.log(chalk.gray("No system icons directory found, skipping."));
+			console.log(
+				chalk.gray("No system icons directory found, skipping."),
+			);
 		}
 	} else {
 		console.log(chalk.gray("Skipping system icons (not enabled)."));
@@ -880,48 +942,76 @@ async function copyIconDirectories(tempDir: string, options: ComponentOptions): 
 /**
  * Copies font directories from user and system locations
  */
-async function copyFontDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function copyFontDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	if (options.userFonts) {
 		const tempUserFontsDir = join(tempDir, "user-fonts");
-		console.log(chalk.gray("Copying user fonts from ~/.local/share/fonts..."));
+		console.log(
+			chalk.gray("Copying user fonts from ~/.local/share/fonts..."),
+		);
 		if (await exists(FONT_PATHS.USER_FONTS_DIR)) {
-			await copyDirectoryContents(FONT_PATHS.USER_FONTS_DIR, tempUserFontsDir);
+			await copyDirectoryContents(
+				FONT_PATHS.USER_FONTS_DIR,
+				tempUserFontsDir,
+			);
 		} else {
 			console.log(chalk.gray("No user fonts directory found, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user fonts from ~/.local/share/fonts (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user fonts from ~/.local/share/fonts (disabled by option).",
+			),
+		);
 	}
 
 	if (options.userFontsAlt) {
 		const tempUserFontsAltDir = join(tempDir, "user-fonts-home");
 		console.log(chalk.gray("Copying user fonts from ~/.fonts..."));
 		if (await exists(FONT_PATHS.USER_FONTS_ALT_DIR)) {
-			await copyDirectoryContents(FONT_PATHS.USER_FONTS_ALT_DIR, tempUserFontsAltDir);
+			await copyDirectoryContents(
+				FONT_PATHS.USER_FONTS_ALT_DIR,
+				tempUserFontsAltDir,
+			);
 		} else {
 			console.log(chalk.gray("No ~/.fonts directory found, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user fonts from ~/.fonts (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user fonts from ~/.fonts (disabled by option).",
+			),
+		);
 	}
 
 	if (options.systemFonts) {
 		const tempSystemFontsDir = join(tempDir, "system-fonts");
-		console.log(chalk.gray("Copying system fonts from /usr/share/fonts..."));
+		console.log(
+			chalk.gray("Copying system fonts from /usr/share/fonts..."),
+		);
 		if (await exists(FONT_PATHS.SYSTEM_FONTS_DIR)) {
 			try {
-				await copyDirectoryContents(FONT_PATHS.SYSTEM_FONTS_DIR, tempSystemFontsDir);
+				await copyDirectoryContents(
+					FONT_PATHS.SYSTEM_FONTS_DIR,
+					tempSystemFontsDir,
+				);
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
 						`Warning: Could not copy system fonts (permission issue?): ${
-							error instanceof Error ? error.message : "Unknown error"
-						}`
-					)
+							error instanceof Error
+								? error.message
+								: "Unknown error"
+						}`,
+					),
 				);
 			}
 		} else {
-			console.log(chalk.gray("No system fonts directory found, skipping."));
+			console.log(
+				chalk.gray("No system fonts directory found, skipping."),
+			);
 		}
 	} else {
 		console.log(chalk.gray("Skipping system fonts (not enabled)."));
@@ -931,7 +1021,10 @@ async function copyFontDirectories(tempDir: string, options: ComponentOptions): 
 /**
  * Copies theme, icon, and font directories from both user and system locations
  */
-async function copyThemeIconAndFontDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function copyThemeIconAndFontDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	await copyThemeDirectories(tempDir, options);
 	await copyIconDirectories(tempDir, options);
 	await copyFontDirectories(tempDir, options);
@@ -940,60 +1033,95 @@ async function copyThemeIconAndFontDirectories(tempDir: string, options: Compone
 /**
  * Restores theme directories to both user and system locations
  */
-async function restoreThemeDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function restoreThemeDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	if (options.userThemes) {
 		const tempUserThemesDir = join(tempDir, "user-themes");
 		console.log(chalk.gray("Restoring user themes to ~/.themes..."));
 		if (await exists(tempUserThemesDir)) {
 			// ensure user themes directory exists
 			await Deno.mkdir(THEME_PATHS.USER_THEMES_DIR, { recursive: true });
-			await copyDirectoryContents(tempUserThemesDir, THEME_PATHS.USER_THEMES_DIR);
+			await copyDirectoryContents(
+				tempUserThemesDir,
+				THEME_PATHS.USER_THEMES_DIR,
+			);
 		} else {
-			console.log(chalk.gray("No user themes found in backup, skipping."));
+			console.log(
+				chalk.gray("No user themes found in backup, skipping."),
+			);
 		}
 	} else {
-		console.log(chalk.gray("Skipping user themes restoration (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user themes restoration (disabled by option).",
+			),
+		);
 	}
 
 	if (options.systemThemes) {
 		const tempSystemThemesDir = join(tempDir, "system-themes");
-		console.log(chalk.gray("Restoring system themes to /usr/share/themes..."));
+		console.log(
+			chalk.gray("Restoring system themes to /usr/share/themes..."),
+		);
 		if (await exists(tempSystemThemesDir)) {
 			try {
-				await copyDirectoryContents(tempSystemThemesDir, THEME_PATHS.SYSTEM_THEMES_DIR);
+				await copyDirectoryContents(
+					tempSystemThemesDir,
+					THEME_PATHS.SYSTEM_THEMES_DIR,
+				);
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
 						`Warning: Could not restore system themes (permission issue?): ${
-							error instanceof Error ? error.message : "Unknown error"
-						}. You may need to manually copy themes with elevated privileges.`
-					)
+							error instanceof Error
+								? error.message
+								: "Unknown error"
+						}. You may need to manually copy themes with elevated privileges.`,
+					),
 				);
 			}
 		} else {
-			console.log(chalk.gray("No system themes found in backup, skipping."));
+			console.log(
+				chalk.gray("No system themes found in backup, skipping."),
+			);
 		}
 	} else {
-		console.log(chalk.gray("Skipping system themes restoration (not enabled)."));
+		console.log(
+			chalk.gray("Skipping system themes restoration (not enabled)."),
+		);
 	}
 }
 
 /**
  * Restores icon directories to user and system locations
  */
-async function restoreIconDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function restoreIconDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	if (options.userIcons) {
 		const tempUserIconsDir = join(tempDir, "user-icons");
-		console.log(chalk.gray("Restoring user icons to ~/.local/share/icons..."));
+		console.log(
+			chalk.gray("Restoring user icons to ~/.local/share/icons..."),
+		);
 		if (await exists(tempUserIconsDir)) {
 			// ensure user icons directory exists
 			await Deno.mkdir(ICON_PATHS.USER_ICONS_DIR, { recursive: true });
-			await copyDirectoryContents(tempUserIconsDir, ICON_PATHS.USER_ICONS_DIR);
+			await copyDirectoryContents(
+				tempUserIconsDir,
+				ICON_PATHS.USER_ICONS_DIR,
+			);
 		} else {
 			console.log(chalk.gray("No user icons found in backup, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user icons restoration to ~/.local/share/icons (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user icons restoration to ~/.local/share/icons (disabled by option).",
+			),
+		);
 	}
 
 	if (options.userIconsAlt) {
@@ -1001,54 +1129,86 @@ async function restoreIconDirectories(tempDir: string, options: ComponentOptions
 		console.log(chalk.gray("Restoring user icons to ~/.icons..."));
 		if (await exists(tempUserIconsAltDir)) {
 			// ensure user icons alt directory exists
-			await Deno.mkdir(ICON_PATHS.USER_ICONS_ALT_DIR, { recursive: true });
-			await copyDirectoryContents(tempUserIconsAltDir, ICON_PATHS.USER_ICONS_ALT_DIR);
+			await Deno.mkdir(ICON_PATHS.USER_ICONS_ALT_DIR, {
+				recursive: true,
+			});
+			await copyDirectoryContents(
+				tempUserIconsAltDir,
+				ICON_PATHS.USER_ICONS_ALT_DIR,
+			);
 		} else {
 			console.log(chalk.gray("No ~/.icons found in backup, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user icons restoration to ~/.icons (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user icons restoration to ~/.icons (disabled by option).",
+			),
+		);
 	}
 
 	if (options.systemIcons) {
 		const tempSystemIconsDir = join(tempDir, "system-icons");
-		console.log(chalk.gray("Restoring system icons to /usr/share/icons..."));
+		console.log(
+			chalk.gray("Restoring system icons to /usr/share/icons..."),
+		);
 		if (await exists(tempSystemIconsDir)) {
 			try {
-				await copyDirectoryContents(tempSystemIconsDir, ICON_PATHS.SYSTEM_ICONS_DIR);
+				await copyDirectoryContents(
+					tempSystemIconsDir,
+					ICON_PATHS.SYSTEM_ICONS_DIR,
+				);
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
 						`Warning: Could not restore system icons (permission issue?): ${
-							error instanceof Error ? error.message : "Unknown error"
-						}. You may need to manually copy icons with elevated privileges.`
-					)
+							error instanceof Error
+								? error.message
+								: "Unknown error"
+						}. You may need to manually copy icons with elevated privileges.`,
+					),
 				);
 			}
 		} else {
-			console.log(chalk.gray("No system icons found in backup, skipping."));
+			console.log(
+				chalk.gray("No system icons found in backup, skipping."),
+			);
 		}
 	} else {
-		console.log(chalk.gray("Skipping system icons restoration (not enabled)."));
+		console.log(
+			chalk.gray("Skipping system icons restoration (not enabled)."),
+		);
 	}
 }
 
 /**
  * Restores font directories to user and system locations
  */
-async function restoreFontDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function restoreFontDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	if (options.userFonts) {
 		const tempUserFontsDir = join(tempDir, "user-fonts");
-		console.log(chalk.gray("Restoring user fonts to ~/.local/share/fonts..."));
+		console.log(
+			chalk.gray("Restoring user fonts to ~/.local/share/fonts..."),
+		);
 		if (await exists(tempUserFontsDir)) {
 			// ensure user fonts directory exists
 			await Deno.mkdir(FONT_PATHS.USER_FONTS_DIR, { recursive: true });
-			await copyDirectoryContents(tempUserFontsDir, FONT_PATHS.USER_FONTS_DIR);
+			await copyDirectoryContents(
+				tempUserFontsDir,
+				FONT_PATHS.USER_FONTS_DIR,
+			);
 		} else {
 			console.log(chalk.gray("No user fonts found in backup, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user fonts restoration to ~/.local/share/fonts (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user fonts restoration to ~/.local/share/fonts (disabled by option).",
+			),
+		);
 	}
 
 	if (options.userFontsAlt) {
@@ -1056,42 +1216,65 @@ async function restoreFontDirectories(tempDir: string, options: ComponentOptions
 		console.log(chalk.gray("Restoring user fonts to ~/.fonts..."));
 		if (await exists(tempUserFontsAltDir)) {
 			// ensure user fonts alt directory exists
-			await Deno.mkdir(FONT_PATHS.USER_FONTS_ALT_DIR, { recursive: true });
-			await copyDirectoryContents(tempUserFontsAltDir, FONT_PATHS.USER_FONTS_ALT_DIR);
+			await Deno.mkdir(FONT_PATHS.USER_FONTS_ALT_DIR, {
+				recursive: true,
+			});
+			await copyDirectoryContents(
+				tempUserFontsAltDir,
+				FONT_PATHS.USER_FONTS_ALT_DIR,
+			);
 		} else {
 			console.log(chalk.gray("No ~/.fonts found in backup, skipping."));
 		}
 	} else {
-		console.log(chalk.gray("Skipping user fonts restoration to ~/.fonts (disabled by option)."));
+		console.log(
+			chalk.gray(
+				"Skipping user fonts restoration to ~/.fonts (disabled by option).",
+			),
+		);
 	}
 
 	if (options.systemFonts) {
 		const tempSystemFontsDir = join(tempDir, "system-fonts");
-		console.log(chalk.gray("Restoring system fonts to /usr/share/fonts..."));
+		console.log(
+			chalk.gray("Restoring system fonts to /usr/share/fonts..."),
+		);
 		if (await exists(tempSystemFontsDir)) {
 			try {
-				await copyDirectoryContents(tempSystemFontsDir, FONT_PATHS.SYSTEM_FONTS_DIR);
+				await copyDirectoryContents(
+					tempSystemFontsDir,
+					FONT_PATHS.SYSTEM_FONTS_DIR,
+				);
 			} catch (error) {
 				console.warn(
 					chalk.yellow(
 						`Warning: Could not restore system fonts (permission issue?): ${
-							error instanceof Error ? error.message : "Unknown error"
-						}`
-					)
+							error instanceof Error
+								? error.message
+								: "Unknown error"
+						}`,
+					),
 				);
 			}
 		} else {
-			console.log(chalk.gray("No system fonts found in backup, skipping."));
+			console.log(
+				chalk.gray("No system fonts found in backup, skipping."),
+			);
 		}
 	} else {
-		console.log(chalk.gray("Skipping system fonts restoration (not enabled)."));
+		console.log(
+			chalk.gray("Skipping system fonts restoration (not enabled)."),
+		);
 	}
 }
 
 /**
  * Restores theme, icon, and font directories to both user and system locations
  */
-async function restoreThemeIconAndFontDirectories(tempDir: string, options: ComponentOptions): Promise<void> {
+async function restoreThemeIconAndFontDirectories(
+	tempDir: string,
+	options: ComponentOptions,
+): Promise<void> {
 	await restoreThemeDirectories(tempDir, options);
 	await restoreIconDirectories(tempDir, options);
 	await restoreFontDirectories(tempDir, options);
@@ -1169,7 +1352,9 @@ async function restoreSettingsFromZip(
 				}
 			} else if (!isProfileSwitch && skipBackup) {
 				console.log(
-					chalk.gray("Skipping automatic pre-restore backup (disabled by --no-backup option)."),
+					chalk.gray(
+						"Skipping automatic pre-restore backup (disabled by --no-backup option).",
+					),
 				);
 			}
 
@@ -1231,14 +1416,14 @@ async function restoreSettingsFromZip(
 							`Clearing existing dconf settings for /org/cinnamon/...`,
 						),
 					);
-					
+
 					// reset/clear all existing Cinnamon dconf settings first
 					const dconfResetResult = await executeCommand("dconf", [
 						"reset",
 						"-f",
 						"/org/cinnamon/",
 					]);
-					
+
 					if (dconfResetResult.success) {
 						console.log(
 							chalk.gray(
@@ -1330,7 +1515,11 @@ async function restoreSettingsFromZip(
 					);
 				}
 			} else {
-				console.log(chalk.gray("Skipping dconf settings restoration (disabled by option)."));
+				console.log(
+					chalk.gray(
+						"Skipping dconf settings restoration (disabled by option).",
+					),
+				);
 			}
 
 			return true;
@@ -1364,7 +1553,12 @@ async function restoreBackupCmd(options: CommandOptions): Promise<void> {
 		),
 	);
 
-	const success = await restoreSettingsFromZip(backupFilePath, false, componentOptions, options.noBackup);
+	const success = await restoreSettingsFromZip(
+		backupFilePath,
+		false,
+		componentOptions,
+		options.noBackup,
+	);
 
 	if (success) {
 		console.log(chalk.green("Settings restored successfully from backup."));
@@ -1560,7 +1754,10 @@ async function selectBackupFile(): Promise<string | null> {
 /**
  * Switch to a different profile
  */
-async function switchProfile(name: string, options: CommandOptions): Promise<void> {
+async function switchProfile(
+	name: string,
+	options: CommandOptions,
+): Promise<void> {
 	const profiles = await readProfiles();
 	const profileToActivate = profiles.find((p) => p.name === name);
 
@@ -1584,7 +1781,7 @@ async function switchProfile(name: string, options: CommandOptions): Promise<voi
 		Deno.exit(0);
 	}
 	console.log(chalk.yellow(`Switching to profile: ${name}`));
-	
+
 	const componentOptions: ComponentOptions = {
 		userThemes: options.userThemes !== false,
 		systemThemes: options.addSystemThemes === true,
@@ -1596,11 +1793,13 @@ async function switchProfile(name: string, options: CommandOptions): Promise<voi
 		systemFonts: options.addSystemFonts === true,
 		dconf: options.dconf !== false,
 	};
-	
+
 	let autoBackupFile: string | null = null;
 	if (!options.noBackup) {
 		console.log(
-			chalk.gray(`Creating backup of current settings before switching...`),
+			chalk.gray(
+				`Creating backup of current settings before switching...`,
+			),
 		);
 		autoBackupFile = await createTimestampedBackup(
 			APP_PATHS.AUTO_BACKUP_DIR,
@@ -1624,12 +1823,16 @@ async function switchProfile(name: string, options: CommandOptions): Promise<voi
 				Deno.exit(0);
 			}
 			console.warn(
-				chalk.yellow("Proceeding with switch despite backup failure..."),
+				chalk.yellow(
+					"Proceeding with switch despite backup failure...",
+				),
 			);
 		}
 	} else {
 		console.log(
-			chalk.gray("Skipping automatic backup (disabled by --no-backup option)."),
+			chalk.gray(
+				"Skipping automatic backup (disabled by --no-backup option).",
+			),
 		);
 	}
 
@@ -2125,8 +2328,13 @@ async function updateActiveProfile(options: CommandOptions): Promise<void> {
 					"/org/cinnamon/",
 				]);
 				if (dconfDumpResult.success && dconfDumpResult.stdout) {
-					await Deno.writeTextFile(dconfDumpPath, dconfDumpResult.stdout);
-					console.log(chalk.gray("dconf settings dumped successfully."));
+					await Deno.writeTextFile(
+						dconfDumpPath,
+						dconfDumpResult.stdout,
+					);
+					console.log(
+						chalk.gray("dconf settings dumped successfully."),
+					);
 				} else {
 					console.warn(
 						chalk.yellow(
@@ -2138,7 +2346,11 @@ async function updateActiveProfile(options: CommandOptions): Promise<void> {
 					);
 				}
 			} else {
-				console.log(chalk.gray("Skipping dconf settings update (disabled by option)."));
+				console.log(
+					chalk.gray(
+						"Skipping dconf settings update (disabled by option).",
+					),
+				);
 			}
 
 			// delete the old zip file
@@ -2210,7 +2422,9 @@ async function updateActiveProfile(options: CommandOptions): Promise<void> {
 /**
  * Backup current settings manually.
  */
-async function backupCurrentSettingsCmd(options: CommandOptions): Promise<void> {
+async function backupCurrentSettingsCmd(
+	options: CommandOptions,
+): Promise<void> {
 	const componentOptions: ComponentOptions = {
 		userThemes: options.userThemes !== false,
 		systemThemes: options.addSystemThemes === true,
@@ -2284,13 +2498,28 @@ async function main(): Promise<void> {
 			"Create a new profile from current Cinnamon settings (files, dconf, themes, icons, and fonts).",
 		)
 		.option("--no-user-themes", "Skip user themes from ~/.themes")
-		.option("--add-system-themes", "Include system themes from /usr/share/themes (may have permission issues and take a long time)")
-		.option("--no-user-icons-local", "Skip user icons from ~/.local/share/icons")
+		.option(
+			"--add-system-themes",
+			"Include system themes from /usr/share/themes (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-icons-local",
+			"Skip user icons from ~/.local/share/icons",
+		)
 		.option("--no-user-icons-home", "Skip user icons from ~/.icons")
-		.option("--add-system-icons", "Include system icons from /usr/share/icons (may have permission issues and take a long time)")
-		.option("--no-user-fonts-local", "Skip user fonts from ~/.local/share/fonts")
+		.option(
+			"--add-system-icons",
+			"Include system icons from /usr/share/icons (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-fonts-local",
+			"Skip user fonts from ~/.local/share/fonts",
+		)
 		.option("--no-user-fonts-home", "Skip user fonts from ~/.fonts")
-		.option("--add-system-fonts", "Include system fonts from /usr/share/fonts (may have permission issues and take a long time)")
+		.option(
+			"--add-system-fonts",
+			"Include system fonts from /usr/share/fonts (may have permission issues and take a long time)",
+		)
 		.option("--no-dconf", "Skip dconf settings")
 		.action(createProfile);
 
@@ -2301,22 +2530,39 @@ async function main(): Promise<void> {
 			"Switch to a different profile (restores files, dconf, themes, icons, and fonts).",
 		)
 		.option("--no-user-themes", "Skip restoring user themes to ~/.themes")
-		.option("--add-system-themes", "Include restoring system themes to /usr/share/themes (may have permission issues and take a long time)")
-		.option("--no-user-icons-local", "Skip restoring user icons to ~/.local/share/icons")
+		.option(
+			"--add-system-themes",
+			"Include restoring system themes to /usr/share/themes (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-icons-local",
+			"Skip restoring user icons to ~/.local/share/icons",
+		)
 		.option("--no-user-icons-home", "Skip restoring user icons to ~/.icons")
-		.option("--add-system-icons", "Include restoring system icons to /usr/share/icons (may have permission issues and take a long time)")
-		.option("--no-user-fonts-local", "Skip restoring user fonts to ~/.local/share/fonts")
+		.option(
+			"--add-system-icons",
+			"Include restoring system icons to /usr/share/icons (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-fonts-local",
+			"Skip restoring user fonts to ~/.local/share/fonts",
+		)
 		.option("--no-user-fonts-home", "Skip restoring user fonts to ~/.fonts")
-		.option("--add-system-fonts", "Include restoring system fonts to /usr/share/fonts (may have permission issues and take a long time)")
+		.option(
+			"--add-system-fonts",
+			"Include restoring system fonts to /usr/share/fonts (may have permission issues and take a long time)",
+		)
 		.option("--no-dconf", "Skip restoring dconf settings")
-		.option("--no-backup", "Skip creating automatic backup before switching")
+		.option(
+			"--no-backup",
+			"Skip creating automatic backup before switching",
+		)
 		.action(switchProfile);
 
 	program
 		.command("delete")
 		.alias("rm")
 		.argument("<name>", "Name of the profile to delete.")
-	
 		.description("Delete an existing profile.")
 		.action(deleteProfile);
 
@@ -2326,13 +2572,28 @@ async function main(): Promise<void> {
 			"Create a manual backup of current Cinnamon settings (files, dconf, themes, icons, and fonts).",
 		)
 		.option("--no-user-themes", "Skip user themes from ~/.themes")
-		.option("--add-system-themes", "Include system themes from /usr/share/themes (may have permission issues and take a long time)")
-		.option("--no-user-icons-local", "Skip user icons from ~/.local/share/icons")
+		.option(
+			"--add-system-themes",
+			"Include system themes from /usr/share/themes (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-icons-local",
+			"Skip user icons from ~/.local/share/icons",
+		)
 		.option("--no-user-icons-home", "Skip user icons from ~/.icons")
-		.option("--add-system-icons", "Include system icons from /usr/share/icons (may have permission issues and take a long time)")
-		.option("--no-user-fonts-local", "Skip user fonts from ~/.local/share/fonts")
+		.option(
+			"--add-system-icons",
+			"Include system icons from /usr/share/icons (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-fonts-local",
+			"Skip user fonts from ~/.local/share/fonts",
+		)
 		.option("--no-user-fonts-home", "Skip user fonts from ~/.fonts")
-		.option("--add-system-fonts", "Include system fonts from /usr/share/fonts (may have permission issues and take a long time)")
+		.option(
+			"--add-system-fonts",
+			"Include system fonts from /usr/share/fonts (may have permission issues and take a long time)",
+		)
 		.option("--no-dconf", "Skip dconf settings")
 		.action(backupCurrentSettingsCmd);
 
@@ -2342,15 +2603,33 @@ async function main(): Promise<void> {
 			"Restore Cinnamon settings from a manual backup (files, dconf, themes, icons, and fonts).",
 		)
 		.option("--no-user-themes", "Skip restoring user themes to ~/.themes")
-		.option("--add-system-themes", "Include restoring system themes to /usr/share/themes (may have permission issues and take a long time)")
-		.option("--no-user-icons-local", "Skip restoring user icons to ~/.local/share/icons")
+		.option(
+			"--add-system-themes",
+			"Include restoring system themes to /usr/share/themes (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-icons-local",
+			"Skip restoring user icons to ~/.local/share/icons",
+		)
 		.option("--no-user-icons-home", "Skip restoring user icons to ~/.icons")
-		.option("--add-system-icons", "Include restoring system icons to /usr/share/icons (may have permission issues and take a long time)")
-		.option("--no-user-fonts-local", "Skip restoring user fonts to ~/.local/share/fonts")
+		.option(
+			"--add-system-icons",
+			"Include restoring system icons to /usr/share/icons (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-fonts-local",
+			"Skip restoring user fonts to ~/.local/share/fonts",
+		)
 		.option("--no-user-fonts-home", "Skip restoring user fonts to ~/.fonts")
-		.option("--add-system-fonts", "Include restoring system fonts to /usr/share/fonts (may have permission issues and take a long time)")
+		.option(
+			"--add-system-fonts",
+			"Include restoring system fonts to /usr/share/fonts (may have permission issues and take a long time)",
+		)
 		.option("--no-dconf", "Skip restoring dconf settings")
-		.option("--no-backup", "Skip creating automatic backup before restoring")
+		.option(
+			"--no-backup",
+			"Skip creating automatic backup before restoring",
+		)
 		.action(restoreBackupCmd);
 
 	program
@@ -2382,13 +2661,28 @@ async function main(): Promise<void> {
 			"Update the currently active profile with current settings (including themes, icons, and fonts).",
 		)
 		.option("--no-user-themes", "Skip user themes from ~/.themes")
-		.option("--add-system-themes", "Include system themes from /usr/share/themes (may have permission issues and take a long time)")
-		.option("--no-user-icons-local", "Skip user icons from ~/.local/share/icons")
+		.option(
+			"--add-system-themes",
+			"Include system themes from /usr/share/themes (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-icons-local",
+			"Skip user icons from ~/.local/share/icons",
+		)
 		.option("--no-user-icons-home", "Skip user icons from ~/.icons")
-		.option("--add-system-icons", "Include system icons from /usr/share/icons (may have permission issues and take a long time)")
-		.option("--no-user-fonts-local", "Skip user fonts from ~/.local/share/fonts")
+		.option(
+			"--add-system-icons",
+			"Include system icons from /usr/share/icons (may have permission issues and take a long time)",
+		)
+		.option(
+			"--no-user-fonts-local",
+			"Skip user fonts from ~/.local/share/fonts",
+		)
 		.option("--no-user-fonts-home", "Skip user fonts from ~/.fonts")
-		.option("--add-system-fonts", "Include system fonts from /usr/share/fonts (may have permission issues and take a long time)")
+		.option(
+			"--add-system-fonts",
+			"Include system fonts from /usr/share/fonts (may have permission issues and take a long time)",
+		)
 		.option("--no-dconf", "Skip dconf settings")
 		.action(updateActiveProfile);
 
