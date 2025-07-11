@@ -90,12 +90,11 @@ jobs:
             /^## v[0-9]+\.[0-9]+\.[0-9]+/ { if (found) exit; }
             { if (found) print; }
           ' CHANGELOG.md)
-          CHANGELOG_SECTION="${CHANGELOG_SECTION//'%'/'%25'}"
-          CHANGELOG_SECTION="${CHANGELOG_SECTION//$'\n'/'%0A'}"
-          CHANGELOG_SECTION="${CHANGELOG_SECTION//$'\r'/'%0D'}"
-          echo "CHANGELOG_SECTION<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG_SECTION" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          {
+            echo "CHANGELOG_SECTION<<EOF"
+            echo "$CHANGELOG_SECTION"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -118,7 +117,6 @@ jobs:
             ${{ steps.get_version.outputs.IS_PRERELEASE == 'true' && '> ⚠️ **Pre-release version**: This is a development release and may contain bugs or incomplete features.' || '> ✅ **Stable release**: This version is considered stable for production use.' }}
             
             ## What's New
-
             ${{ steps.changelog.outputs.CHANGELOG_SECTION }}
 
             ## Installation
