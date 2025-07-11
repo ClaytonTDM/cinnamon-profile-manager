@@ -2,6 +2,9 @@
 
 A command-line tool for managing and switching between multiple Cinnamon desktop environment profiles. Easily save, restore, and share your Cinnamon desktop configurations.
 
+> [!WARNING]  
+> This project is in **beta**. Expect bugs and incomplete features. Please report any issues you encounter!
+
 ## Features
 
 - **Create profiles** from your current Cinnamon settings
@@ -21,6 +24,7 @@ Each profile preserves your complete Cinnamon desktop configuration, including:
 - Keyboard shortcuts and bindings
 - Menu configurations
 - Workspace settings
+- Fonts
 - Other Cinnamon-specific configurations
 
 ## Installation
@@ -31,10 +35,10 @@ The following tools are required:
 
 - `zip` and `unzip` utilities
 - `dconf` (usually installed with Cinnamon)
-- [Deno](https://deno.land/) runtime (if not using pre-compiled binaries)
+- [Deno](https://deno.com/) runtime (if not using pre-compiled binaries)
 
 ```bash
-# Install prerequisites on Debian/Ubuntu-based systems
+# Install prerequisites on Debian/Ubuntu-based systems such as Linux Mint
 sudo apt install zip unzip dconf-cli
 
 # Install Deno
@@ -45,11 +49,11 @@ curl -fsSL https://deno.land/install.sh | sh
 
 #### Method 1: Download pre-compiled binary
 
-The easiest way to install Cinnamon Profile Manager is to download the pre-compiled binary from the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) tab on GitHub.
+The easiest ways to install Cinnamon Profile Manager are to use the below command-line script, or by downloading the pre-compiled binary from the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) section on GitHub.
 
 ```bash
 # Download latest binary
-wget https://github.com/ClaytonTDM/cinnamon-profile-manager/releases/download/v0.1.0/cinnamon-profile-manager-x86_64
+wget https://github.com/ClaytonTDM/cinnamon-profile-manager/releases/download/v0.2.0/cinnamon-profile-manager-x86_64
 
 # Mark it as executable
 chmod +x cinnamon-profile-manager-x86_64
@@ -98,9 +102,33 @@ deno task compile
 
 The compiled binary will be created in the project directory.
 
-> **Note**: Pre-compiled binaries for Linux are available in the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) section of the GitHub repository. This is the recommended installation method for most users.
+> **Note**: The pre-compiled binary is available in the [Releases](https://github.com/claytontdm/cinnamon-profile-manager/releases) section of the GitHub repository. This is the recommended installation method for most users.
 
 ## Usage
+
+```
+Usage: cinnamon-profile-manager [options] [command]
+
+A tool for managing Cinnamon desktop environment profiles. Includes settings, spices, panels, etc.
+
+Options:
+  -V, --version            output the version number
+  -h, --help               display help for command
+
+Commands:
+  list|ls                  List all available profiles.
+  create [options] <name>  Create a new profile from current Cinnamon settings (files, dconf, themes, icons, and fonts).
+  switch [options] <name>  Switch to a different profile (restores files, dconf, themes, icons, and fonts).
+  delete|rm <name>         Delete an existing profile.
+  backup [options]         Create a manual backup of current Cinnamon settings (files, dconf, themes, icons, and fonts).
+  restore [options]        Restore Cinnamon settings from a manual backup (files, dconf, themes, icons, and fonts).
+  list-backups|lb          List all available backup files (manual and automatic).
+  export <name>            Export a profile to an external zip file (includes dconf settings, themes, icons, and fonts if present).
+  import <filepath>        Import a profile from an external zip file (applies dconf, themes, icons, and fonts if present).
+  update|up [options]      Update the currently active profile with current settings (including themes, icons, and fonts).
+  reset                    DANGER: Delete all profiles, backups, and manager settings.
+  help [command]           display help for command
+```
 
 ### Basic Commands
 
