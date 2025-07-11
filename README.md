@@ -53,7 +53,7 @@ The easiest ways to install Cinnamon Profile Manager are to use the below comman
 
 ```bash
 # Download latest binary
-wget https://github.com/ClaytonTDM/cinnamon-profile-manager/releases/download/v0.2.0/cinnamon-profile-manager-x86_64
+wget https://github.com/ClaytonTDM/cinnamon-profile-manager/releases/download/v0.2.1/cinnamon-profile-manager-x86_64
 
 # Mark it as executable
 chmod +x cinnamon-profile-manager-x86_64

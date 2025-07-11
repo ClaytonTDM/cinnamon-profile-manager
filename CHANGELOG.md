@@ -11,3 +11,7 @@
 - Added functionality to automatically save user themes/fonts/icons (and flags to disable them).
 - Fixed potential bug where some Cinnamon settings would overlap upon restore and cause weirdness.
 - Updated some dependencies
+
+## v0.2.1 (2025-07-10)
+
+- Fixed incorrect version string.

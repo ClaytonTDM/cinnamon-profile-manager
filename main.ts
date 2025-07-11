@@ -24,7 +24,7 @@ import { exists } from "jsr:@std/fs@^1.0.17/exists";
 import { basename, join } from "jsr:@std/path@^1.1.1";
 import { Table } from "jsr:@cliffy/table@^1.0.0-rc.8";
 
-const VERSION = "0.1.1";
+const VERSION = "0.2.1";
 const PROGRAM_NAME = "cinnamon-profile-manager";
 
 // --- configuration & constants ---
