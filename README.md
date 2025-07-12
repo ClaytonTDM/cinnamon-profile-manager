@@ -35,14 +35,10 @@ The following tools are required:
 
 - `zip` and `unzip` utilities
 - `dconf` (usually installed with Cinnamon)
-- [Deno](https://deno.com/) runtime (if not using pre-compiled binaries)
 
 ```bash
 # Install prerequisites on Debian/Ubuntu-based systems such as Linux Mint
 sudo apt install zip unzip dconf-cli
-
-# Install Deno
-curl -fsSL https://deno.land/install.sh | sh
 ```
 
 ### Install the Application
